@@ -1,0 +1,14 @@
+name: Profile Kernels
+author: harupy
+branding:
+  icon: upload
+  color: green
+description: Profile Kernels
+inputs:
+  slug:
+    description: Competition slug.
+    required: true
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

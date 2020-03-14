@@ -1,0 +1,21 @@
+name: Upload
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  upload:
+    name: Upload
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        competition: [m5-forecasting-accuracy]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        with:
+          slug: ${{ matrix.competition }}

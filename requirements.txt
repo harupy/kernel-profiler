@@ -1,0 +1,4 @@
+selenium
+requests
+lxml
+beautifulsoup4
