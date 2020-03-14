@@ -10,7 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        competition: [m5-forecasting-accuracy]
+        competition: [
+          m5-forecasting-accuracy,
+          deepfake-detection-challenge,
+        ]
     steps:
       - uses: actions/checkout@v2
       - uses: ./
