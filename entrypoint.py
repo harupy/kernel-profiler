@@ -267,7 +267,7 @@ def main():
             profiles.append(make_profile(kernel_link, commit_table, ker_meta))
 
         # save the result with a timestamp.
-        with open("result.md", "w") as f:
+        with open(f"{comp_slug}.md", "w") as f:
             f.write((2 * "\n").join([f"## Created at {utcnow()}"] + profiles))
 
     except Exception:
