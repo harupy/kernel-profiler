@@ -6,6 +6,7 @@ from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
+import jupytext
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -190,6 +191,13 @@ def get_action_input(name):
     return os.getenv(f"INPUT_{name.upper()}")
 
 
+def replace_extension(path, ext):
+    if not ext.starswith("."):
+        ext = "." + ext
+    root = os.path.splitext(path)[0]
+    return root + ext
+
+
 def main():
     if on_github_action():
         comp_slug = get_action_input("slug")
@@ -269,8 +277,13 @@ def main():
 
         # save the result with a timestamp.
         os.makedirs(OUT_DIR, exist_ok=True)
-        with open(os.path.join(OUT_DIR, f"{comp_slug}.md"), "w") as f:
+        out_path = os.path.join(OUT_DIR, f"{comp_slug}.md")
+        with open(out_path, "w") as f:
             f.write((2 * "\n").join([f"## Created at {utcnow()}"] + profiles))
+
+        # Convert markdown to notebook.
+        notebook = jupytext.read(out_path)
+        jupytext.write(notebook, replace_extension(out_path, ".ipynb"))
 
     except Exception:
         print(traceback.format_exc())
