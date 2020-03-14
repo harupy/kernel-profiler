@@ -29,6 +29,10 @@ def build_driver():
         "Chrome/79.0.3945.117 Safari/537.36"
     )
     options.add_argument(f"--user-agent={user_agent}")
+
+    if os.path.exists("./chromedriver"):
+        return webdriver.Chrome("./chromedriver", options=options)
+
     return webdriver.Chrome(options=options)
 
 
