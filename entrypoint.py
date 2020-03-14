@@ -6,6 +6,7 @@ from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
+from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -277,5 +278,8 @@ def main():
 
 
 if __name__ == "__main__":
+    if on_github_action():
+        display = Display(visible=0, size=(800, 800))
+        display.start()
     driver = build_driver()
     main()

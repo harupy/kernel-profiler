@@ -3,3 +3,4 @@ requests
 lxml
 beautifulsoup4
 tqdm
+pyvirtualdisplay
