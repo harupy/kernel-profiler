@@ -22,7 +22,7 @@ OUT_DIR = "output"
 HEADER = """
 ## This kernel is automatically updated by [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler) at:
 ## {}.
-"""
+""".strip()
 
 
 def build_driver():
