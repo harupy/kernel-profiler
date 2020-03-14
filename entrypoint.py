@@ -14,18 +14,22 @@ from selenium.webdriver.common.by import By
 from tqdm import tqdm
 
 
-options = Options()
-options.add_argument("--headless")
-options.add_argument("window-size=1920x1080")
-user_agent = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/79.0.3945.117 Safari/537.36"
-)
-options.add_argument(f"--user-agent={user_agent}")
-driver = webdriver.Chrome("./chromedriver", options=options)
+driver = None
 TOP_URL = "https://www.kaggle.com"
 TIMEOUT = 15
+
+
+def build_driver():
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("window-size=1920x1080")
+    user_agent = (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/79.0.3945.117 Safari/537.36"
+    )
+    options.add_argument(f"--user-agent={user_agent}")
+    return webdriver.Chrome(options=options)
 
 
 def parse_args():
@@ -269,9 +273,5 @@ def main():
 
 
 if __name__ == "__main__":
-    if not chromedriver_exists():
-        print(
-            "ChromeDriver not found. Please download one here: "
-            "https://chromedriver.chromium.org"
-        )
+    driver = build_driver()
     main()
