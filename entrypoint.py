@@ -120,7 +120,7 @@ def make_meta_table(meta):
     author_link = make_link(
         meta["author_name"], os.path.join(TOP_URL, meta["author_id"])
     )
-    header = ["Name", "Value"]
+    header = ["Key", "Value"]
     meta_table = [
         ("Author", author_link),
         ("Best Score", meta["best_score"]),
