@@ -252,8 +252,6 @@ def main():
         num_kernels = len(kernels)
 
         for ker_idx, (ker_title, ker_url, ker_meta) in enumerate(kernels):
-            if ker_idx > 1:
-                break
             print(f"Processing {ker_url} ({ker_idx + 1} / {num_kernels})")
 
             # Open the kernel.
