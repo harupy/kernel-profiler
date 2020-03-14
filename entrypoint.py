@@ -103,10 +103,10 @@ def make_table(header, data):
     return "\n".join(rows)
 
 
-def make_thumbnail(thumbnail_src, author_name, author_id):
+def make_thumbnail(meta):
     thumbnail_template = '<img src="{}" alt="{}" width="72" height="72">'
-    thumbnail = thumbnail_template.format(thumbnail_src, author_name)
-    author_url = os.path.join(TOP_URL, author_id)
+    thumbnail = thumbnail_template.format(meta["thumbnail_src"], meta["author_name"])
+    author_url = os.path.join(TOP_URL, meta["author_id"])
     return '<a href="{}">{}</a>'.format(author_url, thumbnail)
 
 
@@ -167,9 +167,7 @@ def make_commit_table(commits):
 
 
 def make_profile(kernel_link, commit_table, meta):
-    thumbnail = make_thumbnail(
-        meta["thumbnail_src"], meta["author_name"], meta["author_id"]
-    )
+    thumbnail = make_thumbnail(meta)
     meta_table = make_meta_table(meta)
     return f"""
 <br>
