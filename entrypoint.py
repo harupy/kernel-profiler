@@ -279,10 +279,5 @@ def main():
 
 
 if __name__ == "__main__":
-    # if on_github_action():
-    #     from pyvirtualdisplay import Display
-
-    #     display = Display(visible=0, size=(1920, 1080))
-    #     display.start()
     driver = build_driver()
     main()
