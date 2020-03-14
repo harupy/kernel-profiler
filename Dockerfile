@@ -1,6 +1,6 @@
 FROM python:3.7.6
 
-RUN apt-get update && apt-get install -y xvfb
+RUN apt-get update && apt-get install -y xvfb sudo
 
 ENV PATH="/:${PATH}"
 
@@ -12,7 +12,7 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     apt-get install -y google-chrome-stable
 
 # https://stackoverflow.com/questions/53902507/unknown-error-session-deleted-because-of-page-crash-from-unknown-error-cannot/53970825
-RUN mount -t tmpfs -o rw,nosuid,nodev,noexec,relatime,size=512M tmpfs /dev/shm
+RUN sudo mount -t tmpfs -o rw,nosuid,nodev,noexec,relatime,size=512M tmpfs /dev/shm
 
 
 # Install Chrome Driver.
