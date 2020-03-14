@@ -23,6 +23,7 @@ def build_driver():
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     options.add_argument("window-size=1920x1080")
     user_agent = (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) "
@@ -278,10 +279,10 @@ def main():
 
 
 if __name__ == "__main__":
-    if on_github_action():
-        from pyvirtualdisplay import Display
+    # if on_github_action():
+    #     from pyvirtualdisplay import Display
 
-        display = Display(visible=0, size=(1920, 1080))
-        display.start()
+    #     display = Display(visible=0, size=(1920, 1080))
+    #     display.start()
     driver = build_driver()
     main()
