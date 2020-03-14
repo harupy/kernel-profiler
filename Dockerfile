@@ -2,6 +2,9 @@ FROM python:3.7.6
 
 RUN apt-get update && apt-get install -y xvfb sudo
 
+RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
+USER docker
+
 ENV PATH="/:${PATH}"
 
 # Install Chrome.
