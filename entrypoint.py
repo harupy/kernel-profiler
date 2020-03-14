@@ -192,7 +192,7 @@ def get_action_input(name):
 
 
 def replace_extension(path, ext):
-    if not ext.starswith("."):
+    if not ext.startswith("."):
         ext = "." + ext
     root = os.path.splitext(path)[0]
     return root + ext
