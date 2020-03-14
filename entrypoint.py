@@ -19,6 +19,10 @@ driver = None
 TOP_URL = "https://www.kaggle.com"
 TIMEOUT = 15
 OUT_DIR = "output"
+HEADER = """
+## This kernel is automatically updated by [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler)
+## Created at {}
+"""
 
 
 def build_driver():
@@ -281,7 +285,7 @@ def main():
         os.makedirs(OUT_DIR, exist_ok=True)
         out_path = os.path.join(OUT_DIR, f"{comp_slug}.md")
         with open(out_path, "w") as f:
-            f.write((2 * "\n").join([f"## Created at {utcnow()}"] + profiles))
+            f.write((2 * "\n").join([HEADER.format(utcnow())] + profiles))
 
         # Convert markdown to notebook.
         notebook = jupytext.read(out_path)
