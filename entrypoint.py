@@ -20,7 +20,7 @@ TOP_URL = "https://www.kaggle.com"
 TIMEOUT = 15
 OUT_DIR = "output"
 HEADER = """
-## This kernel is automatically updated by [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler)
+## This kernel is automatically updated by [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler).
 ## Created at {}
 """
 
