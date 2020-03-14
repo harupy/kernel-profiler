@@ -59,7 +59,7 @@ def get_kernel_meta(kernel):
         "author_name": kernel.select("span.tooltip-container")[0]
         .get("data-tooltip")
         .strip(),
-        "author_url": kernel.select("a.avatar")[0].get("href").strip(),
+        "author_id": kernel.select("a.avatar")[0].get("href").strip("/"),
         "thumbnail_src": kernel.select("img.avatar__thumbnail")[0].get("src").strip(),
         "vote_count": kernel.select("span.vote-button__vote-count")[0].text.strip(),
         "comment_count": kernel.select("a.kernel-list-item__info-block--comment")[
@@ -103,14 +103,17 @@ def make_table(header, data):
     return "\n".join(rows)
 
 
-def make_thumbnail(thumbnail_src, author_name, author_url):
+def make_thumbnail(thumbnail_src, author_name, author_id):
     thumbnail_template = '<img src="{}" alt="{}" width="72" height="72">'
     thumbnail = thumbnail_template.format(thumbnail_src, author_name)
+    author_url = os.path.join(TOP_URL, author_id)
     return '<a href="{}">{}</a>'.format(author_url, thumbnail)
 
 
 def make_meta_table(meta):
-    author_link = make_link(meta["author_name"], meta["author_url"])
+    author_link = make_link(
+        meta["author_name"], os.path.join(TOP_URL, meta["author_id"])
+    )
     header = ["Name", "Value"]
     meta_table = [
         ("Author", author_link),
@@ -165,7 +168,7 @@ def make_commit_table(commits):
 
 def make_profile(kernel_link, commit_table, meta):
     thumbnail = make_thumbnail(
-        meta["thumbnail_src"], meta["author_name"], meta["author_url"]
+        meta["thumbnail_src"], meta["author_name"], meta["author_id"]
     )
     meta_table = make_meta_table(meta)
     return f"""
@@ -245,6 +248,8 @@ def main():
         num_kernels = len(kernels)
 
         for ker_idx, (ker_title, ker_url, ker_meta) in enumerate(kernels):
+            if ker_idx > 1:
+                break
             print(f"Processing {ker_url} ({ker_idx + 1} / {num_kernels})")
 
             # Open the kernel.
