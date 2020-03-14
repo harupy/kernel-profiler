@@ -111,8 +111,7 @@ def make_thumbnail(meta):
     thumbnail_template = '<img src="{}" alt="{}" width="72" height="72">'
     thumbnail = thumbnail_template.format(meta["thumbnail_src"], meta["author_name"])
     author_url = os.path.join(TOP_URL, meta["author_id"])
-    anchor = '<a href="{}">{}</a>'.format(author_url, thumbnail)
-    return '<dic style="text-align: left">{}</div>'.format(anchor)
+    return '<a href="{}" style="float: left">{}</a><br>'.format(author_url, thumbnail)
 
 
 def make_meta_table(meta):
