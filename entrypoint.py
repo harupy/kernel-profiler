@@ -17,6 +17,7 @@ from tqdm import tqdm
 driver = None
 TOP_URL = "https://www.kaggle.com"
 TIMEOUT = 15
+OUT_DIR = "output"
 
 
 def build_driver():
@@ -267,7 +268,8 @@ def main():
             profiles.append(make_profile(kernel_link, commit_table, ker_meta))
 
         # save the result with a timestamp.
-        with open(f"{comp_slug}.md", "w") as f:
+        os.makedirs(OUT_DIR, exist_ok=True)
+        with open(os.path.join(OUT_DIR, f"{comp_slug}.md"), "w") as f:
             f.write((2 * "\n").join([f"## Created at {utcnow()}"] + profiles))
 
     except Exception:
