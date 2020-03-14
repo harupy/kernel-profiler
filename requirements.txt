@@ -2,3 +2,5 @@ selenium
 requests
 lxml
 beautifulsoup4
+tqdm
+jupytext

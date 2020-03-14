@@ -2,7 +2,8 @@
 chromedriver
 error.html
 result.md
-.vscode
+.vscode/
+output/
 
 # https://github.com/github/gitignore/blob/master/Python.gitignore
 

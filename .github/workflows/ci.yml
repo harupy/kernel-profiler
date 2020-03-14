@@ -14,8 +14,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./
+        with:
+          slug: ${{ matrix.competition }}
+
+      - uses: harupy/push-kaggle-kernel@master
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
         with:
-          slug: ${{ matrix.competition }}
+          slug: top-public-kernels-${{ matrix.competition }}
+          title: 'Top Public Kernels: ${{ matrix.competition }}'
+          code_file: ./output/${{ matrix.competition }}.ipynb
+          language: python
+          kernel_type: notebook
+          is_private: false
+          competition_sources: ${{ matrix.competition }}

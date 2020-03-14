@@ -6,6 +6,7 @@ from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
+import jupytext
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -14,18 +15,33 @@ from selenium.webdriver.common.by import By
 from tqdm import tqdm
 
 
-options = Options()
-options.add_argument("--headless")
-options.add_argument("window-size=1920x1080")
-user_agent = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/79.0.3945.117 Safari/537.36"
-)
-options.add_argument(f"--user-agent={user_agent}")
-driver = webdriver.Chrome("./chromedriver", options=options)
+driver = None
 TOP_URL = "https://www.kaggle.com"
 TIMEOUT = 15
+OUT_DIR = "output"
+HEADER = """
+## This kernel is automatically updated by [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler).
+## Last Updated: {}
+""".strip()
+
+
+def build_driver():
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("window-size=1920x1080")
+    user_agent = (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/79.0.3945.117 Safari/537.36"
+    )
+    options.add_argument(f"--user-agent={user_agent}")
+
+    if os.path.exists("./chromedriver"):
+        return webdriver.Chrome("./chromedriver", options=options)
+
+    return webdriver.Chrome(options=options)
 
 
 def parse_args():
@@ -47,7 +63,7 @@ def get_kernel_meta(kernel):
         "author_name": kernel.select("span.tooltip-container")[0]
         .get("data-tooltip")
         .strip(),
-        "author_url": kernel.select("a.avatar")[0].get("href").strip(),
+        "author_id": kernel.select("a.avatar")[0].get("href").strip("/"),
         "thumbnail_src": kernel.select("img.avatar__thumbnail")[0].get("src").strip(),
         "vote_count": kernel.select("span.vote-button__vote-count")[0].text.strip(),
         "comment_count": kernel.select("a.kernel-list-item__info-block--comment")[
@@ -91,15 +107,20 @@ def make_table(header, data):
     return "\n".join(rows)
 
 
-def make_thumbnail(thumbnail_src, author_name, author_url):
+def make_thumbnail(meta):
     thumbnail_template = '<img src="{}" alt="{}" width="72" height="72">'
-    thumbnail = thumbnail_template.format(thumbnail_src, author_name)
-    return '<a href="{}">{}</a>'.format(author_url, thumbnail)
+    thumbnail = thumbnail_template.format(meta["thumbnail_src"], meta["author_name"])
+    author_url = os.path.join(TOP_URL, meta["author_id"])
+    return '<a href="{}" style="display: inline-block">{}</a>'.format(
+        author_url, thumbnail
+    )
 
 
 def make_meta_table(meta):
-    author_link = make_link(meta["author_name"], meta["author_url"])
-    header = ["Name", "Value"]
+    author_link = make_link(
+        meta["author_name"], os.path.join(TOP_URL, meta["author_id"])
+    )
+    header = ["Key", "Value"]
     meta_table = [
         ("Author", author_link),
         ("Best Score", meta["best_score"]),
@@ -152,9 +173,7 @@ def make_commit_table(commits):
 
 
 def make_profile(kernel_link, commit_table, meta):
-    thumbnail = make_thumbnail(
-        meta["thumbnail_src"], meta["author_name"], meta["author_url"]
-    )
+    thumbnail = make_thumbnail(meta)
     meta_table = make_meta_table(meta)
     return f"""
 <br>
@@ -177,6 +196,13 @@ def on_github_action():
 
 def get_action_input(name):
     return os.getenv(f"INPUT_{name.upper()}")
+
+
+def replace_extension(path, ext):
+    if not ext.startswith("."):
+        ext = "." + ext
+    root = os.path.splitext(path)[0]
+    return root + ext
 
 
 def main():
@@ -226,8 +252,6 @@ def main():
         num_kernels = len(kernels)
 
         for ker_idx, (ker_title, ker_url, ker_meta) in enumerate(kernels):
-            if ker_idx >= 2:
-                break
             print(f"Processing {ker_url} ({ker_idx + 1} / {num_kernels})")
 
             # Open the kernel.
@@ -257,8 +281,14 @@ def main():
             profiles.append(make_profile(kernel_link, commit_table, ker_meta))
 
         # save the result with a timestamp.
-        with open("result.md", "w") as f:
-            f.write((2 * "\n").join([f"## Created at {utcnow()}"] + profiles))
+        os.makedirs(OUT_DIR, exist_ok=True)
+        out_path = os.path.join(OUT_DIR, f"{comp_slug}.md")
+        with open(out_path, "w") as f:
+            f.write((2 * "\n").join([HEADER.format(utcnow())] + profiles))
+
+        # Convert markdown to notebook.
+        notebook = jupytext.read(out_path)
+        jupytext.write(notebook, replace_extension(out_path, ".ipynb"))
 
     except Exception:
         print(traceback.format_exc())
@@ -269,9 +299,5 @@ def main():
 
 
 if __name__ == "__main__":
-    if not chromedriver_exists():
-        print(
-            "ChromeDriver not found. Please download one here: "
-            "https://chromedriver.chromium.org"
-        )
+    driver = build_driver()
     main()
