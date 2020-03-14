@@ -12,7 +12,8 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 # Install Chrome Driver.
 RUN CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE) && \
     wget https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip && \
-    unzip chromedriver_linux64.zip && rm chromedriver_linux64.zip
+    unzip chromedriver_linux64.zip && rm chromedriver_linux64.zip && \
+    mv chromedriver /
 
 # Install Python dependencies.
 COPY ./requirements.txt .
