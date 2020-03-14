@@ -6,7 +6,6 @@ from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
-from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -23,6 +22,7 @@ TIMEOUT = 15
 def build_driver():
     options = Options()
     options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
     options.add_argument("window-size=1920x1080")
     user_agent = (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) "
@@ -279,6 +279,8 @@ def main():
 
 if __name__ == "__main__":
     if on_github_action():
+        from pyvirtualdisplay import Display
+
         display = Display(visible=0, size=(1920, 1080))
         display.start()
     driver = build_driver()
