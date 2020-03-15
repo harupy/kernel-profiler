@@ -18,7 +18,6 @@ from tqdm import tqdm
 driver = None
 TOP_URL = "https://www.kaggle.com"
 TIMEOUT = 15
-OUT_DIR = "output"
 HEADER = """
 ## This kernel is automatically updated by [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler).
 ## Last Updated: {}
@@ -51,7 +50,14 @@ def parse_args():
         "-m",
         "--max-num-kernels",
         type=int,
-        help="How many kernels maximum to profile for each competition",
+        default=20,
+        help="How many kernels maximum to profile for each competition (default: 20)",
+    )
+    parser.add_argument(
+        "-o",
+        "--out-dir",
+        default="output",
+        help='Directory to store the output (default: "output")',
     )
     return parser.parse_args()
 
@@ -220,10 +226,12 @@ def main():
     if on_github_action():
         comp_slug = get_action_input("slug")
         max_num_kernels = int(get_action_input("max_num_kernels"))
+        out_dir = get_action_input("out_dir")
     else:
         args = parse_args()
         comp_slug = args.comp_slug
         max_num_kernels = args.max_num_kernels
+        out_dir = args.out_dir
 
     comp_url = f"https://www.kaggle.com/c/{comp_slug}/notebooks"
 
@@ -296,8 +304,8 @@ def main():
             profiles.append(make_profile(kernel_link, commit_table, ker_meta))
 
         # Save the result with a timestamp.
-        os.makedirs(OUT_DIR, exist_ok=True)
-        out_path = os.path.join(OUT_DIR, f"{comp_slug}.md")
+        os.makedirs(out_dir, exist_ok=True)
+        out_path = os.path.join(out_dir, f"{comp_slug}.md")
         with open(out_path, "w") as f:
             f.write((2 * "\n").join([HEADER.format(utcnow())] + profiles))
 
