@@ -14,6 +14,11 @@ inputs:
     required: false
     default: 20
 
+  out_dir:
+    description: Directory to store the output.
+    required: false
+    default: output
+
 runs:
   using: 'docker'
   image: 'Dockerfile'
