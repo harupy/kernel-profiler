@@ -24,6 +24,3 @@ jobs:
 
       - name: Black
         run: black --check .
-
-      - name: Convert script to notebook
-        run: ./tools/convert.sh
