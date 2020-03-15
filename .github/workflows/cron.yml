@@ -13,6 +13,7 @@ jobs:
         competition: [m5-forecasting-accuracy, deepfake-detection-challenge]
     steps:
       - uses: actions/checkout@v2
+
       - uses: ./
         with:
           slug: ${{ matrix.competition }}
