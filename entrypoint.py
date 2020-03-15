@@ -205,6 +205,11 @@ def replace_extension(path, ext):
     return root + ext
 
 
+def to_notebook(path):
+    notebook = jupytext.read(path)
+    jupytext.write(notebook, replace_extension(path, ".ipynb"))
+
+
 def main():
     if on_github_action():
         comp_slug = get_action_input("slug")
@@ -280,15 +285,14 @@ def main():
             kernel_link = make_link(ker_title, ker_url)
             profiles.append(make_profile(kernel_link, commit_table, ker_meta))
 
-        # save the result with a timestamp.
+        # Save the result with a timestamp.
         os.makedirs(OUT_DIR, exist_ok=True)
         out_path = os.path.join(OUT_DIR, f"{comp_slug}.md")
         with open(out_path, "w") as f:
             f.write((2 * "\n").join([HEADER.format(utcnow())] + profiles))
 
         # Convert markdown to notebook.
-        notebook = jupytext.read(out_path)
-        jupytext.write(notebook, replace_extension(out_path, ".ipynb"))
+        to_notebook(out_path)
 
     except Exception:
         print(traceback.format_exc())
