@@ -76,8 +76,8 @@ def get_kernel_meta(kernel):
         .get("data-tooltip")
         .strip(),
         "author_id": kernel.select("a.avatar")[0].get("href").strip("/"),
-        "thumbnail_src": kernel.select("img.avatar__thumbnail")[0].get("src").strip(),
-        "tier_src": TOP_URL + kernel.select("img.avatar__tier")[0].get("src").strip(),
+        "thumbnail_src": kernel.select("img.avatar__thumbnail")[0].get("src"),
+        "tier_src": TOP_URL + kernel.select("img.avatar__tier")[0].get("src"),
         "vote_count": kernel.select("span.vote-button__vote-count")[0].text.strip(),
         "comment_count": kernel.select("a.kernel-list-item__info-block--comment")[
             0
