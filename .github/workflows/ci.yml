@@ -1,31 +1,29 @@
-name: Upload
-on:
-  schedule:
-    # Run this job every 12 hours.
-    - cron: '0 */12 * * *'
+name: Test
+on: [pull_request]
 
 jobs:
-  upload:
-    name: Upload
+  test:
+    name: Test
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        competition: [m5-forecasting-accuracy, deepfake-detection-challenge]
+        competition: [m5-forecasting-accuracy]
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
-        with:
-          slug: ${{ matrix.competition }}
 
-      - uses: harupy/push-kaggle-kernel@master
-        env:
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
         with:
-          slug: top-public-kernels-${{ matrix.competition }}
-          title: 'Top Public Kernels: ${{ matrix.competition }}'
-          code_file: ./output/${{ matrix.competition }}.ipynb
-          language: python
-          kernel_type: notebook
-          is_private: false
-          competition_sources: ${{ matrix.competition }}
+          python-version: 3.7
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Flake8
+        run: flake8 .
+
+      - name: Black
+        run: black --check .
+
+      - name: Convert script to notebook
+        run: ./tools/convert.sh
