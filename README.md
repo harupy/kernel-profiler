@@ -1,5 +1,7 @@
 # Kernel Profiler
 
+![Upload](https://github.com/harupy/kernel-profiler/workflows/Upload/badge.svg)
+
 Profile top public kernels on Kaggle.
 
 ## Creating a development environment
