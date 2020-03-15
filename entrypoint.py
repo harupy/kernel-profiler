@@ -205,6 +205,11 @@ def replace_extension(path, ext):
     return root + ext
 
 
+def to_notebook(path):
+    notebook = jupytext.read(path)
+    jupytext.write(notebook, replace_extension(path, ".ipynb"))
+
+
 def main():
     if on_github_action():
         comp_slug = get_action_input("slug")
@@ -287,8 +292,7 @@ def main():
             f.write((2 * "\n").join([HEADER.format(utcnow())] + profiles))
 
         # Convert markdown to notebook.
-        notebook = jupytext.read(out_path)
-        jupytext.write(notebook, replace_extension(out_path, ".ipynb"))
+        to_notebook(out_path)
 
     except Exception:
         print(traceback.format_exc())
