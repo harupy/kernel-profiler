@@ -46,7 +46,13 @@ def build_driver():
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Kernel Profiler")
-    parser.add_argument("-c", "--comp-slug", help="competition slug (e.g. titanic)")
+    parser.add_argument("-c", "--comp-slug", help="Competition slug (e.g. titanic)")
+    parser.add_argument(
+        "-m",
+        "--max-num-kernels",
+        type=int,
+        help="How many kernels maximum to profile for each competition",
+    )
     return parser.parse_args()
 
 
@@ -213,25 +219,27 @@ def to_notebook(path):
 def main():
     if on_github_action():
         comp_slug = get_action_input("slug")
+        max_num_kernels = int(get_action_input("max_num_kernels"))
     else:
         args = parse_args()
         comp_slug = args.comp_slug
+        max_num_kernels = args.max_num_kernels
 
     comp_url = f"https://www.kaggle.com/c/{comp_slug}/notebooks"
 
     profiles = []
     try:
-        # open the notebook page.
+        # Open the notebooks tab.
         driver.get(comp_url)
 
-        # click 'Sort By' select box.
+        # Click 'Sort By' select box.
         WebDriverWait(driver, TIMEOUT).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "div.KaggleSelect"))
         )
         sort_by = driver.find_element_by_css_selector("div.KaggleSelect")
         sort_by.click()
 
-        # select 'Best score'.
+        # Select "Best score".
         WebDriverWait(driver, TIMEOUT).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "div.Select-menu-outer"))
         )
@@ -239,24 +247,26 @@ def main():
         best_score = [opt for opt in options if opt.text == "Best Score"][0]
         best_score.click()
 
-        # parse kernels.
+        # Parse kernels.
         WebDriverWait(driver, TIMEOUT).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "a.block-link__anchor"))
         )
         soup = make_soup(driver.page_source)
-        kernels = soup.select("div.block-link--bordered")
         kernels = [
             (
-                ker.select("div.kernel-list-item__name")[0].text,  # kernel name
+                ker.select("div.kernel-list-item__name")[0].text,  # Kernel name.
                 TOP_URL
-                + ker.select("a.block-link__anchor")[0].get("href"),  # kernel url
-                get_kernel_meta(ker),
-            )  # kernel metadata
-            for ker in kernels
+                + ker.select("a.block-link__anchor")[0].get("href"),  # Kernel url.
+                get_kernel_meta(ker),  # Kernel metadata.
+            )
+            for ker in soup.select("div.block-link--bordered")
         ]
-        num_kernels = len(kernels)
+        num_kernels = min(max_num_kernels, len(kernels))
 
         for ker_idx, (ker_title, ker_url, ker_meta) in enumerate(kernels):
+            if (ker_idx + 1) > max_num_kernels:
+                break
+
             print(f"Processing {ker_url} ({ker_idx + 1} / {num_kernels})")
 
             # Open the kernel.
