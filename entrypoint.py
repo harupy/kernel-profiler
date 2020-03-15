@@ -77,6 +77,7 @@ def get_kernel_meta(kernel):
         .strip(),
         "author_id": kernel.select("a.avatar")[0].get("href").strip("/"),
         "thumbnail_src": kernel.select("img.avatar__thumbnail")[0].get("src").strip(),
+        "tier_src": TOP_URL + kernel.select("img.avatar__tier")[0].get("src").strip(),
         "vote_count": kernel.select("span.vote-button__vote-count")[0].text.strip(),
         "comment_count": kernel.select("a.kernel-list-item__info-block--comment")[
             0
@@ -120,11 +121,11 @@ def make_table(header, data):
 
 
 def make_thumbnail(meta):
-    thumbnail_template = '<img src="{}" alt="{}" width="72" height="72">'
-    thumbnail = thumbnail_template.format(meta["thumbnail_src"], meta["author_name"])
+    thumbnail = '<img src="{}" width="72">'.format(meta["thumbnail_src"])
+    tier = '<img src="{}" width="72">'.format(meta["tier_src"])
     author_url = os.path.join(TOP_URL, meta["author_id"])
-    return '<a href="{}" style="display: inline-block">{}</a>'.format(
-        author_url, thumbnail
+    return '<a href="{}" style="display: inline-block">{}<br>{}</a>'.format(
+        author_url, thumbnail, tier
     )
 
 
