@@ -1,5 +1,8 @@
 name: Upload
 on:
+  push:
+    branches:
+      - master
   schedule:
     # Run this job every 12 hours.
     - cron: '0 */12 * * *'
