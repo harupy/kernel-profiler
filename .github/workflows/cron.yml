@@ -1,5 +1,8 @@
 name: Upload
 on:
+  push:
+    branches:
+      - master
   schedule:
     # Run this job every 12 hours.
     - cron: '0 */12 * * *'
@@ -23,8 +26,8 @@ jobs:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
         with:
-          slug: top-public-kernels-${{ matrix.competition }}
-          title: 'Top Public Kernels: ${{ matrix.competition }}'
+          slug: top-scoring-kernels-${{ matrix.competition }}
+          title: 'Top Scoring Kernels: ${{ matrix.competition }}'
           code_file: ./output/${{ matrix.competition }}.ipynb
           language: python
           kernel_type: notebook
