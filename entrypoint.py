@@ -103,6 +103,17 @@ def extract_best_public_score(html):
     return float(m.group(1)) if m else ""
 
 
+def format_run_time(run_time_str):
+    run_time = float(run_time_str[:-1])
+
+    if run_time < 60:
+        return f"{run_time} sec."
+    elif run_time >= 60 and run_time < 3600:
+        return f"{round(run_time / 60, 1)} min."
+    else:
+        return f"{round(run_time / 3600, 1)} hr."
+
+
 def make_link(text, url):
     return f"[{text}]({url})"
 
@@ -150,6 +161,7 @@ def make_commit_table(commits):
     for commit in tqdm(commits):
         version = commit.select("a:nth-of-type(2)")[0]
         committed_at = commit.find("span", recursive=False).text.strip()
+        run_time = commit.select("a:nth-of-type(4)")[0]
         added = commit.select("span:nth-of-type(2)")[0].text.strip()
         deleted = commit.select("span:nth-of-type(3)")[0].text.strip()
         href = version.get("href")
@@ -175,13 +187,22 @@ def make_commit_table(commits):
                 version.text.strip(),
                 score,
                 committed_at,
+                format_run_time(run_time),
                 added,
                 deleted,
                 make_link("Open", url),
             )
         )
 
-    header = ["Version", "Score", "Committed at", "Added", "Deleted", "Link"]
+    header = [
+        "Version",
+        "Score",
+        "Committed at",
+        "Run Time",
+        "Added",
+        "Deleted",
+        "Link",
+    ]
     return make_table(header, commit_data)
 
 
