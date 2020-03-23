@@ -62,10 +62,6 @@ def parse_args():
     return parser.parse_args()
 
 
-def chromedriver_exists():
-    return os.path.exists("chromedriver")
-
-
 def make_soup(html):
     return BeautifulSoup(html, "lxml")
 
