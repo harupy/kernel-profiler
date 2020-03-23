@@ -161,7 +161,7 @@ def make_commit_table(commits):
     for commit in tqdm(commits):
         version = commit.select("a:nth-of-type(2)")[0]
         committed_at = commit.find("span", recursive=False).text.strip()
-        run_time = commit.select("a:nth-of-type(4)")[0]
+        run_time = commit.select("a:nth-of-type(4)")[0].text.strip()
         added = commit.select("span:nth-of-type(2)")[0].text.strip()
         deleted = commit.select("span:nth-of-type(3)")[0].text.strip()
         href = version.get("href")
