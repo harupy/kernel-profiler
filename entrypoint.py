@@ -301,9 +301,13 @@ def main():
 
             # Open the commit table.
             WebDriverWait(driver, TIMEOUT).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "span.fa-history"))
+                EC.presence_of_element_located(
+                    (By.XPATH, "//div[contains(@class, 'VersionsInfoBox')")
+                )
             )
-            commit_link = driver.find_element_by_css_selector("span.fa-history")
+            commit_link = driver.find_element_by_css_selector(
+                "//div[contains(@class, 'VersionsInfoBox')"
+            )
             commit_link.click()
 
             WebDriverWait(driver, TIMEOUT).until(
