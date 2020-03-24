@@ -5,7 +5,7 @@ on:
       - master
   schedule:
     # Run this job every 12 hours.
-    - cron: '0 */12 * * *'
+    - cron: "0 */12 * * *"
 
 jobs:
   upload:
@@ -13,7 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        competition: [m5-forecasting-accuracy, liverpool-ion-switching, bengaliai-cv19, jigsaw-multilingual-toxic-comment-classification]
+        competition:
+          [
+            m5-forecasting-accuracy,
+            liverpool-ion-switching,
+            bengaliai-cv19,
+            jigsaw-multilingual-toxic-comment-classification,
+          ]
     steps:
       - uses: actions/checkout@v2
 
@@ -27,7 +33,7 @@ jobs:
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
         with:
           slug: top-scoring-kernels-${{ matrix.competition }}
-          title: 'Top Scoring Kernels: ${{ matrix.competition }}'
+          title: "Top Scoring Kernels: ${{ matrix.competition }}"
           code_file: ./output/${{ matrix.competition }}.ipynb
           language: python
           kernel_type: notebook
