@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        competition: [m5-forecasting-accuracy, liverpool-ion-switching, bengaliai-cv19]
+        competition: [m5-forecasting-accuracy, liverpool-ion-switching, bengaliai-cv19, jigsaw-multilingual-toxic-comment-classification]
     steps:
       - uses: actions/checkout@v2
 
