@@ -302,11 +302,11 @@ def main():
             # Open the commit table.
             WebDriverWait(driver, TIMEOUT).until(
                 EC.presence_of_element_located(
-                    (By.XPATH, "//div[contains(@class, 'VersionsInfoBox')")
+                    (By.XPATH, "//div[contains(@class, 'VersionsInfoBox')]")
                 )
             )
             commit_link = driver.find_element_by_xpath(
-                "//div[contains(@class, 'VersionsInfoBox')"
+                "//div[contains(@class, 'VersionsInfoBox')]"
             )
             commit_link.click()
 
