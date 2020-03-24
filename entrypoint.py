@@ -305,7 +305,7 @@ def main():
                     (By.XPATH, "//div[contains(@class, 'VersionsInfoBox')")
                 )
             )
-            commit_link = driver.find_element_by_css_selector(
+            commit_link = driver.find_element_by_xpath(
                 "//div[contains(@class, 'VersionsInfoBox')"
             )
             commit_link.click()
