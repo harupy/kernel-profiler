@@ -103,11 +103,11 @@ def format_run_time(run_time_str):
     run_time = float(run_time_str[:-1])
 
     if run_time < 60:
-        return f"{run_time} sec."
+        return f"{run_time} s"
     elif run_time >= 60 and run_time < 3600:
-        return f"{round(run_time / 60, 1)} min."
+        return f"{round(run_time / 60, 1)} m"
     else:
-        return f"{round(run_time / 3600, 1)} hr."
+        return f"{round(run_time / 3600, 1)} h"
 
 
 def make_link(text, url):
