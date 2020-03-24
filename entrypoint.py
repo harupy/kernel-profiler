@@ -286,7 +286,7 @@ def main():
                 get_kernel_meta(ker),  # Kernel metadata.
             )
             for ker in soup.select("div.block-link--bordered")
-            if len(ker.select('div.kernel-list-item__score')) != 0
+            if len(ker.select("div.kernel-list-item__score")) != 0
         ]
         num_kernels = min(max_num_kernels, len(kernels))
 
