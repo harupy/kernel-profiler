@@ -43,7 +43,7 @@ jobs:
         with:
           slug: top-scoring-kernels-${{ matrix.competition.id }}
           title: "Top Scoring Kernels: ${{ matrix.competition.id }}"
-          code_file: ./output/${{ matrix.competition.id }}.ipynb
+          code_file: ./output/${{ matrix.competition.slug }}.ipynb
           language: python
           kernel_type: notebook
           is_private: false
