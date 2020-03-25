@@ -14,28 +14,30 @@ jobs:
     strategy:
       matrix:
         competition:
-          [
-            m5-forecasting-accuracy,
-            liverpool-ion-switching,
-            bengaliai-cv19,
-            jigsaw-multilingual-toxic-comment-classification,
-          ]
+          # [
+          #   m5-forecasting-accuracy,
+          #   liverpool-ion-switching,
+          #   bengaliai-cv19,
+          #   jigsaw-multilingual-toxic-comment-classification,
+          # ]
+          - slug: m5-forecasting-accuracy
+            id: m5-forecasting-accuracy
     steps:
       - uses: actions/checkout@v2
 
       - uses: ./
         with:
-          slug: ${{ matrix.competition }}
+          slug: ${{ matrix.competition.slug }}
 
       - uses: harupy/push-kaggle-kernel@master
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
         with:
-          slug: top-scoring-kernels-${{ matrix.competition }}
-          title: "Top Scoring Kernels: ${{ matrix.competition }}"
-          code_file: ./output/${{ matrix.competition }}.ipynb
+          slug: top-scoring-kernels-${{ matrix.competition.id }}
+          title: "Top Scoring Kernels: ${{ matrix.competition.id }}"
+          code_file: ./output/${{ matrix.competition.slug }}.ipynb
           language: python
           kernel_type: notebook
           is_private: false
-          competition_sources: ${{ matrix.competition }}
+          competition_sources: ${{ matrix.competition.slug }}
