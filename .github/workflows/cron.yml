@@ -14,14 +14,21 @@ jobs:
     strategy:
       matrix:
         competition:
-          # [
-          #   m5-forecasting-accuracy,
-          #   liverpool-ion-switching,
-          #   bengaliai-cv19,
-          #   jigsaw-multilingual-toxic-comment-classification,
-          # ]
+          # id must be less than or equal to 29 characters
+          # because it will be prefixed with "Top Scoring Kernels: " (21 characters)
+          # and used as a kernel title (which is restricted to 50 characters).
           - slug: m5-forecasting-accuracy
             id: m5-forecasting-accuracy
+
+          - slug: liverpool-ion-switching
+            id: liverpool-ion-switching
+
+          - slug: bengaliai-cv19
+            id: bengaliai-cv19
+
+          - slug: jigsaw-multilingual-toxic-comment-classification
+            id: jigsaw-multilingual
+
     steps:
       - uses: actions/checkout@v2
 
@@ -36,7 +43,7 @@ jobs:
         with:
           slug: top-scoring-kernels-${{ matrix.competition.id }}
           title: "Top Scoring Kernels: ${{ matrix.competition.id }}"
-          code_file: ./output/${{ matrix.competition.slug }}.ipynb
+          code_file: ./output/${{ matrix.competition.id }}.ipynb
           language: python
           kernel_type: notebook
           is_private: false
