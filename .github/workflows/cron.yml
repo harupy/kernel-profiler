@@ -29,6 +29,9 @@ jobs:
           - slug: jigsaw-multilingual-toxic-comment-classification
             id: jigsaw-multilingual
 
+          - slug: tweet-sentiment-extraction
+            id: tweet-sentiment-extraction
+
     steps:
       - uses: actions/checkout@v2
 
