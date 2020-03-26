@@ -74,8 +74,8 @@ def get_kernel_meta(kernel):
         "author_id": kernel.select("a.avatar")[0].get("href").strip("/"),
         "thumbnail_src": kernel.select("img.avatar__thumbnail")[0].get("src"),
         "tier_src": TOP_URL + kernel.select("img.avatar__tier")[0].get("src"),
-        "vote_count": kernel.select("span.vote-button__vote-count")[0].text.strip(),
-        "comment_count": kernel.select("a.kernel-list-item__info-block--comment")[
+        "votes": kernel.select("span.vote-button__vote-count")[0].text.strip(),
+        "comments": kernel.select("a.kernel-list-item__info-block--comment")[
             0
         ].text.strip(),
         "last_updated": kernel.select("div.kernel-list-item__details > span")[
@@ -144,8 +144,8 @@ def make_meta_table(meta):
     meta_table = [
         ("Author", author_link),
         ("Best Score", meta["best_score"]),
-        ("Vote Count", meta["vote_count"]),
-        ("Comment Count", meta["comment_count"]),
+        ("Votes", meta["votes"]),
+        ("Comments", meta["comments"]),
         ("Last Updated", meta["last_updated"]),
     ]
     return make_table(header, meta_table)
