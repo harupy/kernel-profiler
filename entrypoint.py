@@ -19,28 +19,9 @@ driver = None
 TOP_URL = "https://www.kaggle.com"
 TIMEOUT = 15
 HEADER = """
-## This kernel is automatically updated by [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler).
+## - The creation and upload of this notebook is fully automated by [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler).
 ## Last Updated: {}
 """.strip()  # NOQA
-
-
-def build_driver():
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("window-size=1920x1080")
-    user_agent = (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/79.0.3945.117 Safari/537.36"
-    )
-    options.add_argument(f"--user-agent={user_agent}")
-
-    if os.path.exists("./chromedriver"):
-        return webdriver.Chrome("./chromedriver", options=options)
-
-    return webdriver.Chrome(options=options)
 
 
 def parse_args():
@@ -62,26 +43,45 @@ def parse_args():
     return parser.parse_args()
 
 
+def create_driver():
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("window-size=1920x1080")
+    user_agent = (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/79.0.3945.117 Safari/537.36"
+    )
+    options.add_argument(f"--user-agent={user_agent}")
+
+    if os.path.exists("./chromedriver"):
+        return webdriver.Chrome("./chromedriver", options=options)
+
+    return webdriver.Chrome(options=options)
+
+
 def make_soup(html):
     return BeautifulSoup(html, "lxml")
 
 
-def get_kernel_meta(kernel):
+def get_kernel_meta(soup):
     return {
-        "author_name": kernel.select("span.tooltip-container")[0]
+        "author_name": soup.select("span.tooltip-container")[0]
         .get("data-tooltip")
         .strip(),
-        "author_id": kernel.select("a.avatar")[0].get("href").strip("/"),
-        "thumbnail_src": kernel.select("img.avatar__thumbnail")[0].get("src"),
-        "tier_src": TOP_URL + kernel.select("img.avatar__tier")[0].get("src"),
-        "votes": kernel.select("span.vote-button__vote-count")[0].text.strip(),
-        "comments": kernel.select("a.kernel-list-item__info-block--comment")[
+        "author_id": soup.select("a.avatar")[0].get("href").strip("/"),
+        "thumbnail_src": soup.select("img.avatar__thumbnail")[0].get("src"),
+        "tier_src": TOP_URL + soup.select("img.avatar__tier")[0].get("src"),
+        "votes": soup.select("span.vote-button__vote-count")[0].text.strip(),
+        "comments": soup.select("a.kernel-list-item__info-block--comment")[
             0
         ].text.strip(),
-        "last_updated": kernel.select("div.kernel-list-item__details > span")[
+        "last_updated": soup.select("div.kernel-list-item__details > span")[
             0
         ].text.strip(),
-        "best_score": kernel.select("div.kernel-list-item__score")[0].text.strip(),
+        "best_score": soup.select("div.kernel-list-item__score")[0].text.strip(),
     }
 
 
@@ -119,66 +119,68 @@ def make_row(items):
     return f"|{row}|"
 
 
-def make_table(header, data):
-    rows = []
-    rows.append(make_row(header))
-    rows.append(make_row(["-" for _ in range(len(header))]))
-    rows.extend([make_row(items) for items in data])
+def make_table(data, header):
+    rows = [make_row(header)]
+    rows += [make_row(["-" for _ in range(len(header))])]
+    rows += [make_row(items) for items in data]
     return "\n".join(rows)
 
 
-def make_thumbnail(meta):
-    thumbnail = '<img src="{}" width="72">'.format(meta["thumbnail_src"])
-    tier = '<img src="{}" width="72">'.format(meta["tier_src"])
-    author_url = os.path.join(TOP_URL, meta["author_id"])
+def make_thumbnail(thumbnail_src, tier_src, author_id):
+    thumbnail = '<img src="{}" width="72">'.format(thumbnail_src)
+    tier = '<img src="{}" width="72">'.format(tier_src)
+    author_url = os.path.join(TOP_URL, author_id)
     return '<a href="{}" style="display: inline-block">{}<br>{}</a>'.format(
         author_url, thumbnail, tier
     )
 
 
-def make_meta_table(meta):
+def format_meta_data(meta):
     author_link = make_link(
         meta["author_name"], os.path.join(TOP_URL, meta["author_id"])
     )
-    header = ["Key", "Value"]
-    meta_table = [
+    data = [
         ("Author", author_link),
         ("Best Score", meta["best_score"]),
         ("Votes", meta["votes"]),
         ("Comments", meta["comments"]),
         ("Last Updated", meta["last_updated"]),
     ]
-    return make_table(header, meta_table)
+    headers = ["Key", "Value"]
+
+    return data, headers
 
 
-def make_commit_table(commits):
-    commit_data = []
+def extract_commit_data(soup):
+    pattern = re.compile(r"VersionsPaneContent_IdeVersionsTable.+")
+    rows = soup.find("table", {"class": pattern}).select("tbody > div")
+    commits = []
 
-    for commit in tqdm(commits):
-        version = commit.select("a:nth-of-type(2)")[0]
-        committed_at = commit.find("span", recursive=False).text.strip()
-        run_time = commit.select("a:nth-of-type(4)")[0].text.strip()
-        added = commit.select("span:nth-of-type(2)")[0].text.strip()
-        deleted = commit.select("span:nth-of-type(3)")[0].text.strip()
+    for row in tqdm(rows):
+        version = row.select("a:nth-of-type(2)")[0]
+        committed_at = row.find("span", recursive=False).text.strip()
+        run_time = row.select("a:nth-of-type(4)")[0].text.strip()
+        added = row.select("span:nth-of-type(2)")[0].text.strip()
+        deleted = row.select("span:nth-of-type(3)")[0].text.strip()
         href = version.get("href")
+
         if href is None:
             continue
 
-        url = TOP_URL + href
-
         # Ignore failed commits.
-        icon = commit.select("a:nth-of-type(1) > svg")[0].get("data-icon")
+        icon = row.select("a:nth-of-type(1) > svg")[0].get("data-icon")
         if icon == "times-circle":
             continue
 
         # Extract the public score.
+        url = TOP_URL + href
         resp = requests.get(url)
         score = extract_public_score(resp.text)
 
         if score == "":
             continue
 
-        commit_data.append(
+        commits.append(
             (
                 version.text.strip(),
                 score,
@@ -190,7 +192,7 @@ def make_commit_table(commits):
             )
         )
 
-    header = [
+    headers = [
         "Version",
         "Score",
         "Committed at",
@@ -199,12 +201,10 @@ def make_commit_table(commits):
         "Deleted",
         "Link",
     ]
-    return make_table(header, commit_data)
+    return commits, headers
 
 
-def make_profile(kernel_link, commit_table, meta):
-    thumbnail = make_thumbnail(meta)
-    meta_table = make_meta_table(meta)
+def make_profile(kernel_link, thumbnail, commit_table, meta_table):
     return f"""
 <br>
 
@@ -240,6 +240,19 @@ def to_notebook(path):
     jupytext.write(notebook, replace_extension(path, ".ipynb"))
 
 
+def extract_kernels(soup):
+    kernels = []
+
+    for ker in soup.select("div.block-link--bordered"):
+        if len(ker.select("div.kernel-list-item__score")) == 0:
+            continue
+
+        name = ker.select("div.kernel-list-item__name")[0].text
+        url = TOP_URL + ker.select("a.block-link__anchor")[0].get("href")
+        kernels.append({"name": name, "url": url, **get_kernel_meta(ker)})
+    return kernels
+
+
 def main():
     if on_github_action():
         comp_slug = get_action_input("slug")
@@ -260,9 +273,9 @@ def main():
 
         # Click 'Sort By' select box.
         WebDriverWait(driver, TIMEOUT).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "div.KaggleSelect"))
+            EC.presence_of_element_located((By.CSS_SELECTOR, "div.Select-value"))
         )
-        sort_by = driver.find_element_by_css_selector("div.KaggleSelect")
+        sort_by = driver.find_element_by_css_selector("div.Select-value")
         sort_by.click()
 
         # Select "Best score".
@@ -273,33 +286,24 @@ def main():
         best_score = [opt for opt in options if opt.text == "Best Score"][0]
         best_score.click()
 
-        # Parse kernels.
         WebDriverWait(driver, TIMEOUT).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "a.block-link__anchor"))
         )
-        soup = make_soup(driver.page_source)
-        kernels = [
-            (
-                ker.select("div.kernel-list-item__name")[0].text,  # Kernel name.
-                TOP_URL
-                + ker.select("a.block-link__anchor")[0].get("href"),  # Kernel url.
-                get_kernel_meta(ker),  # Kernel metadata.
-            )
-            for ker in soup.select("div.block-link--bordered")
-            if len(ker.select("div.kernel-list-item__score")) != 0
-        ]
+
+        # Extract kernels.
+        kernels = extract_kernels(make_soup(driver.page_source))
         num_kernels = min(max_num_kernels, len(kernels))
 
-        for ker_idx, (ker_title, ker_url, ker_meta) in enumerate(kernels):
+        for ker_idx, kernel in enumerate(kernels):
             if (ker_idx + 1) > max_num_kernels:
                 break
 
-            print(f"Processing {ker_url} ({ker_idx + 1} / {num_kernels})")
+            print(f"Processing ({ker_idx + 1} / {num_kernels})")
 
             # Open the kernel.
-            driver.get(ker_url)
+            driver.get(kernel["url"])
 
-            # Open the commit table.
+            # Display the commit table.
             WebDriverWait(driver, TIMEOUT).until(
                 EC.presence_of_element_located(
                     (By.XPATH, "//div[contains(@class, 'VersionsInfoBox')]")
@@ -315,16 +319,19 @@ def main():
                     (By.CSS_SELECTOR, "div.vote-button__voters-modal-title")
                 )
             )
+
+            # Get the page source containing the commit table.
             soup = make_soup(driver.page_source)
 
-            # Process commit history.
-            pattern = r"VersionsPaneContent_IdeVersionsTable.+"
-            commits = soup.find("table", {"class": re.compile(pattern)}).select(
-                "tbody > div"
+            commit_table = make_table(*extract_commit_data(soup))
+            meta_table = make_table(*format_meta_data(kernel))
+            kernel_link = make_link(kernel["name"], kernel["url"])
+            thumbnail = make_thumbnail(
+                kernel["thumbnail_src"], kernel["tier_src"], kernel["author_id"]
             )
-            commit_table = make_commit_table(commits)
-            kernel_link = make_link(ker_title, ker_url)
-            profiles.append(make_profile(kernel_link, commit_table, ker_meta))
+            profiles.append(
+                make_profile(kernel_link, thumbnail, commit_table, meta_table)
+            )
 
         # Save the result with a timestamp.
         os.makedirs(out_dir, exist_ok=True)
@@ -344,5 +351,5 @@ def main():
 
 
 if __name__ == "__main__":
-    driver = build_driver()
+    driver = create_driver()
     main()
