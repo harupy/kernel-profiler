@@ -82,6 +82,7 @@ def get_kernel_meta(soup):
             0
         ].text.strip(),
         "best_score": soup.select("div.kernel-list-item__score")[0].text.strip(),
+        "language": soup.select("span.tooltip-container")[2].text.strip(),
     }
 
 
@@ -141,6 +142,7 @@ def format_meta_data(meta):
     )
     data = [
         ("Author", author_link),
+        ("Language", meta["language"]),
         ("Best Score", meta["best_score"]),
         ("Votes", meta["votes"]),
         ("Comments", meta["comments"]),
