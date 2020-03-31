@@ -20,6 +20,9 @@ jobs:
           - slug: m5-forecasting-accuracy
             id: m5-forecasting-accuracy
 
+          - slug: m5-forecasting-uncertainty
+            name: m5-forecasting-uncertainty
+
           - slug: liverpool-ion-switching
             id: liverpool-ion-switching
 
