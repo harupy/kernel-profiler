@@ -32,6 +32,9 @@ jobs:
           - slug: tweet-sentiment-extraction
             id: tweet-sentiment-extraction
 
+          - slug: flower-classification-with-tpus
+            id: flower-classification-tpus
+
     steps:
       - uses: actions/checkout@v2
 
