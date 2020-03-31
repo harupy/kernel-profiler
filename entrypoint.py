@@ -67,6 +67,14 @@ def make_soup(html):
 
 
 def get_kernel_meta(soup):
+    medal = soup.select("img.kernel-list-item__medals")
+
+    if len(medal) > 0:
+        # Replace "notebook" with "discussion" to use a bigger medal image.
+        medal_src = TOP_URL + medal[0].get("src").replace("notebooks", "discussion")
+    else:
+        medal_src = ""
+
     return {
         "author_name": soup.select("span.tooltip-container")[0]
         .get("data-tooltip")
@@ -83,6 +91,7 @@ def get_kernel_meta(soup):
         ].text.strip(),
         "best_score": soup.select("div.kernel-list-item__score")[0].text.strip(),
         "language": soup.select("span.tooltip-container")[2].text.strip(),
+        "medal_src": medal_src,
     }
 
 
@@ -120,6 +129,10 @@ def make_row(items):
     return f"|{row}|"
 
 
+def make_image(alt, src):
+    return "![{}]({})".format(alt, src)
+
+
 def make_table(data, header):
     rows = [make_row(header)]
     rows += [make_row(["-" for _ in range(len(header))])]
@@ -140,11 +153,18 @@ def format_meta_data(meta):
     author_link = make_link(
         meta["author_name"], os.path.join(TOP_URL, meta["author_id"])
     )
+
+    if meta["medal_src"] != "":
+        medal_img = make_image("medal", meta["medal_src"])
+    else:
+        medal_img = "-"
+
     data = [
         ("Author", author_link),
         ("Language", meta["language"]),
         ("Best Score", meta["best_score"]),
         ("Votes", meta["votes"]),
+        ("Medal", medal_img),
         ("Comments", meta["comments"]),
         ("Last Updated", meta["last_updated"]),
     ]
