@@ -144,7 +144,7 @@ def make_thumbnail(thumbnail_src, tier_src, author_id):
     thumbnail = '<img src="{}" width="72">'.format(thumbnail_src)
     tier = '<img src="{}" width="72">'.format(tier_src)
     author_url = os.path.join(TOP_URL, author_id)
-    return '<a href="{}" style="display: inline-block">{}<br>{}</a>'.format(
+    return '<a href="{}" style="display: inline-block">{}{}</a>'.format(
         author_url, thumbnail, tier
     )
 
