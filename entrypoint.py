@@ -130,7 +130,7 @@ def make_row(items):
 
 
 def make_image(alt, src):
-    return "![{}]({})".format(alt, src)
+    return '<img alt="{}" src="{}" align="left">'.format(alt, src)
 
 
 def make_table(data, header):
