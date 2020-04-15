@@ -19,7 +19,7 @@ driver = None
 TOP_URL = "https://www.kaggle.com"
 TIMEOUT = 15
 HEADER = """
-## [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler) automatically creates and uploads this notebook.
+## [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler) automatically updates this notebook by using GitHub Actions and Kaggle API.
 ## Last Updated: {}
 """.strip()  # NOQA
 
