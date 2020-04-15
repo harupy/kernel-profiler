@@ -19,7 +19,7 @@ driver = None
 TOP_URL = "https://www.kaggle.com"
 TIMEOUT = 15
 HEADER = """
-## [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler) automatically updates this notebook by using [GitHub Actions](https://github.com/features/actions) and [Kaggle API](https://github.com/Kaggle/kaggle-api). Any feedback would be appreciated.
+## My repository: [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler) automatically updates this notebook by using [GitHub Actions](https://github.com/features/actions) and [Kaggle API](https://github.com/Kaggle/kaggle-api). Any feedback would be appreciated.
 ## Last Updated: {}
 """.strip()  # NOQA
 
