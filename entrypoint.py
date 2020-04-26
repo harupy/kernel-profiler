@@ -93,7 +93,7 @@ def get_kernel_meta(soup):
         "last_updated": (
             soup.select("div.kernel-list-item__details > span")[0].text.strip()
         ),
-        "best_score": float(soup.select("div.kernel-list-item__score")[0].text.strip()),
+        "best_score": soup.select("div.kernel-list-item__score")[0].text.strip(),
         "language": soup.select("span.tooltip-container")[2].text.strip(),
         "medal_src": medal_src,
     }
@@ -105,12 +105,12 @@ def utcnow():
 
 def extract_public_score(html):
     m = re.search(r'"publicScore":"(.+?)"', html)
-    return float(m.group(1)) if m else ""
+    return m.group(1) if m else ""
 
 
 def extract_best_public_score(html):
     m = re.search(r'"bestPublicScore":([^,]+)', html)
-    return float(m.group(1)) if m else ""
+    return m.group(1) if m else ""
 
 
 def format_run_time(run_time_str):
@@ -213,7 +213,7 @@ def extract_commit_data(soup):
         commits.append(
             (
                 version.text.strip(),
-                float(score),
+                score,
                 committed_at,
                 format_run_time(run_time),
                 added,
