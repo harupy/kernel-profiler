@@ -25,4 +25,5 @@ jobs:
       - uses: ./
         with:
           slug: m5-forecasting-accuracy
+          is_higher_better: false
           max_num_kernels: 1
