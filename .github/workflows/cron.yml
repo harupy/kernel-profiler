@@ -18,24 +18,31 @@ jobs:
           # because it will be prefixed with "Top Scoring Kernels: " (21 characters)
           # and used as a kernel title (which is restricted to 50 characters).
           - slug: m5-forecasting-accuracy
+            is_higher_better: false
             id: m5-forecasting-accuracy
 
           - slug: m5-forecasting-uncertainty
+            is_higher_better: false
             id: m5-forecasting-uncertainty
 
           - slug: liverpool-ion-switching
+            is_higher_better: true
             id: liverpool-ion-switching
 
           - slug: bengaliai-cv19
+            is_higher_better: true
             id: bengaliai-cv19
 
           - slug: jigsaw-multilingual-toxic-comment-classification
+            is_higher_better: true
             id: jigsaw-multilingual
 
           - slug: tweet-sentiment-extraction
+            is_higher_better: true
             id: tweet-sentiment-extraction
 
           - slug: flower-classification-with-tpus
+            is_higher_better: true
             id: flower-classification-tpus
 
     steps:
@@ -44,6 +51,7 @@ jobs:
       - uses: ./
         with:
           slug: ${{ matrix.competition.slug }}
+          is_higher_better: ${{ matrix.competition.is_higher_better }}
 
       - uses: harupy/push-kaggle-kernel@master
         env:
