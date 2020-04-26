@@ -51,6 +51,7 @@ jobs:
       - uses: ./
         with:
           slug: ${{ matrix.competition.slug }}
+          is_higher_better: ${{ matrix.competition.is_higher_better }}
 
       - uses: harupy/push-kaggle-kernel@master
         env:
