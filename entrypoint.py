@@ -82,19 +82,19 @@ def get_kernel_meta(soup):
         medal_src = ""
 
     return {
-        "author_name": soup.select("span.tooltip-container")[0]
-        .get("data-tooltip")
-        .strip(),
+        "author_name": (
+            soup.select("span.tooltip-container")[0].get("data-tooltip").strip()
+        ),
         "author_id": soup.select("a.avatar")[0].get("href").strip("/"),
         "thumbnail_src": soup.select("img.avatar__thumbnail")[0].get("src"),
         "tier_src": TOP_URL + soup.select("img.avatar__tier")[0].get("src"),
         "votes": soup.select("span.vote-button__vote-count")[0].text.strip(),
-        "comments": soup.select("a.kernel-list-item__info-block--comment")[
-            0
-        ].text.strip(),
-        "last_updated": soup.select("div.kernel-list-item__details > span")[
-            0
-        ].text.strip(),
+        "comments": (
+            soup.select("a.kernel-list-item__info-block--comment")[0].text.strip()
+        ),
+        "last_updated": (
+            soup.select("div.kernel-list-item__details > span")[0].text.strip()
+        ),
         "best_score": float(soup.select("div.kernel-list-item__score")[0].text.strip()),
         "language": soup.select("span.tooltip-container")[2].text.strip(),
         "medal_src": medal_src,
@@ -135,11 +135,11 @@ def make_row(items):
     return f"|{row}|"
 
 
-def make_image(alt, src):
+def make_image_tag(alt, src):
     return '<img alt="{}" src="{}" align="left">'.format(alt, src)
 
 
-def make_anchor(href, text):
+def make_anchor_tag(href, text):
     return '<a href="{}">{}</a>'.format(href, text)
 
 
@@ -165,7 +165,7 @@ def format_meta_data(meta):
     )
 
     if meta["medal_src"] != "":
-        medal_img = make_image("medal", meta["medal_src"])
+        medal_img = make_image_tag("medal", meta["medal_src"])
     else:
         medal_img = "-"
 
@@ -220,7 +220,7 @@ def extract_commit_data(soup):
                 format_run_time(run_time),
                 added,
                 deleted,
-                make_anchor(url, "Open"),
+                make_anchor_tag(url, "Open"),
             )
         )
 
