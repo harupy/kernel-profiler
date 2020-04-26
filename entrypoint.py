@@ -34,15 +34,6 @@ def parse_args():
         "-c", "--comp-slug", required=True, help="Competition slug (e.g. titanic)"
     )
 
-    # TODO: Is it possible to extract this information from competition metadata?
-    parser.add_argument(
-        "-i",
-        "--is-higher-better",
-        required=True,
-        type=strtobool,
-        help="Is the evaluation metric higher better?",
-    )
-
     parser.add_argument(
         "-m",
         "--max-num-kernels",
@@ -105,7 +96,7 @@ def get_kernel_meta(soup):
         "last_updated": soup.select("div.kernel-list-item__details > span")[
             0
         ].text.strip(),
-        "best_score": soup.select("div.kernel-list-item__score")[0].text.strip(),
+        "best_score": float(soup.select("div.kernel-list-item__score")[0].text.strip()),
         "language": soup.select("span.tooltip-container")[2].text.strip(),
         "medal_src": medal_src,
     }
@@ -225,7 +216,7 @@ def extract_commit_data(soup):
         commits.append(
             (
                 version.text.strip(),
-                score,
+                float(score),
                 committed_at,
                 format_run_time(run_time),
                 added,
@@ -307,13 +298,11 @@ def highlight_best_score(row, best_score):
 def main():
     if on_github_action():
         comp_slug = get_action_input("slug")
-        is_higher_better = get_action_input("is_higher_better")
         max_num_kernels = int(get_action_input("max_num_kernels"))
         out_dir = get_action_input("out_dir")
     else:
         args = parse_args()
         comp_slug = args.comp_slug
-        is_higher_better = args.is_higher_better
         max_num_kernels = args.max_num_kernels
         out_dir = args.out_dir
 
@@ -379,9 +368,10 @@ def main():
             # Make a commit table.
             commits, headers = extract_commit_data(soup)
             df = pd.DataFrame(commits, columns=headers)
-            best_score = df["Score"].max() if is_higher_better else df["Score"].min()
             commit_table = transform(
-                df.style.apply(highlight_best_score, best_score=best_score, axis=1)
+                df.style.apply(
+                    highlight_best_score, best_score=kernel["best_score"], axis=1
+                )
                 .hide_index()
                 .render()
             )
