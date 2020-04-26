@@ -38,6 +38,12 @@ jobs:
           - slug: flower-classification-with-tpus
             id: flower-classification-tpus
 
+          - slug: trends-assessment-prediction
+            id: trends-neuroimaging
+
+          - slug: prostate-cancer-grade-assessment
+            id: panda-challenge
+
     steps:
       - uses: actions/checkout@v2
 
