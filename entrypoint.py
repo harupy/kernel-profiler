@@ -246,7 +246,7 @@ def make_profile(kernel_link, thumbnail, commit_table, meta_table):
 {meta_table}
 
 ### Commit History
-The highlighted row represent the best score.
+The highlighted row corresponds to the best score.
 {commit_table}
 """.strip()
 
