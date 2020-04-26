@@ -3,7 +3,11 @@ import argparse
 import traceback
 import re
 from datetime import datetime
+from distutils.util import strtobool
 
+
+import pandas as pd
+from premailer import transform
 import requests
 from bs4 import BeautifulSoup
 import jupytext
@@ -26,7 +30,19 @@ HEADER = """
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Kernel Profiler")
-    parser.add_argument("-c", "--comp-slug", help="Competition slug (e.g. titanic)")
+    parser.add_argument(
+        "-c", "--comp-slug", required=True, help="Competition slug (e.g. titanic)"
+    )
+
+    # TODO: Is it possible to extract this information from competition metadata?
+    parser.add_argument(
+        "-i",
+        "--is-higher-better",
+        required=True,
+        type=strtobool,
+        help="Is the evaluation metric higher better?",
+    )
+
     parser.add_argument(
         "-m",
         "--max-num-kernels",
@@ -133,6 +149,10 @@ def make_image(alt, src):
     return '<img alt="{}" src="{}" align="left">'.format(alt, src)
 
 
+def make_anchor(href, text):
+    return '<a href="{}">{}</a>'.format(href, text)
+
+
 def make_table(data, header):
     rows = [make_row(header)]
     rows += [make_row(["-" for _ in range(len(header))])]
@@ -210,7 +230,7 @@ def extract_commit_data(soup):
                 format_run_time(run_time),
                 added,
                 deleted,
-                make_link("Open", url),
+                make_anchor(url, "Open"),
             )
         )
 
@@ -238,6 +258,7 @@ def make_profile(kernel_link, thumbnail, commit_table, meta_table):
 {meta_table}
 
 ### Commit History
+The highlighted row represent the best score.
 {commit_table}
 """.strip()
 
@@ -275,14 +296,24 @@ def extract_kernels(soup):
     return kernels
 
 
+def highlight_best_score(row, best_score):
+    should_highlight = row["Score"] == best_score
+    return [
+        ("background-color: #d5fdd5" if should_highlight else "")
+        for _ in range(len(row))  # len(row) returns the number of columns.
+    ]
+
+
 def main():
     if on_github_action():
         comp_slug = get_action_input("slug")
+        is_higher_better = get_action_input("is_higher_better")
         max_num_kernels = int(get_action_input("max_num_kernels"))
         out_dir = get_action_input("out_dir")
     else:
         args = parse_args()
         comp_slug = args.comp_slug
+        is_higher_better = args.is_higher_better
         max_num_kernels = args.max_num_kernels
         out_dir = args.out_dir
 
@@ -305,8 +336,8 @@ def main():
             EC.presence_of_element_located((By.CSS_SELECTOR, "div.Select-menu-outer"))
         )
         options = driver.find_elements_by_css_selector("div.Select-menu-outer div")
-        best_score = [opt for opt in options if opt.text == "Best Score"][0]
-        best_score.click()
+        best_score_opt = [opt for opt in options if opt.text == "Best Score"][0]
+        best_score_opt.click()
 
         WebDriverWait(driver, TIMEOUT).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "a.block-link__anchor"))
@@ -345,7 +376,16 @@ def main():
             # Get the page source containing the commit table.
             soup = make_soup(driver.page_source)
 
-            commit_table = make_table(*extract_commit_data(soup))
+            # Make a commit table.
+            commits, headers = extract_commit_data(soup)
+            df = pd.DataFrame(commits, columns=headers)
+            best_score = df["Score"].max() if is_higher_better else df["Score"].min()
+            commit_table = transform(
+                df.style.apply(highlight_best_score, best_score=best_score, axis=1)
+                .hide_index()
+                .render()
+            )
+
             meta_table = make_table(*format_meta_data(kernel))
             kernel_link = make_link(kernel["name"], kernel["url"])
             thumbnail = make_thumbnail(
