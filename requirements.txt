@@ -4,3 +4,6 @@ lxml
 beautifulsoup4
 tqdm
 jupytext
+pandas
+jinja2
+premailer
