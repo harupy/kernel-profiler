@@ -1,9 +1,16 @@
-selenium
+# Scraping.
 requests
-lxml
+selenium
 beautifulsoup4
-tqdm
+lxml
+
+# Convert markdown files to notebooks.
 jupytext
+
+# Highlight the best score.
 pandas
 jinja2
 premailer
+
+# Display progress.
+tqdm
