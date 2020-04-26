@@ -3,7 +3,6 @@ import argparse
 import traceback
 import re
 from datetime import datetime
-from distutils.util import strtobool
 
 
 import pandas as pd
