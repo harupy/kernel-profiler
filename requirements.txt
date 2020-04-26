@@ -4,13 +4,13 @@ selenium
 beautifulsoup4
 lxml
 
-# Convert markdown files to notebooks.
-jupytext
-
 # Highlight the best score.
 pandas
 jinja2
 premailer
+
+# Convert markdown files to notebooks.
+jupytext
 
 # Display progress.
 tqdm
