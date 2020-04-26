@@ -9,6 +9,10 @@ inputs:
     description: Competition slug.
     required: true
 
+  is_higher_better:
+    description: Is the evaluation metric higher better?
+    required: true
+
   max_num_kernels:
     description: How many kernels maximum to profile for each competition.
     required: false
@@ -20,5 +24,5 @@ inputs:
     default: output
 
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: "docker"
+  image: "Dockerfile"
