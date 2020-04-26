@@ -4,17 +4,16 @@ import traceback
 import re
 from datetime import datetime
 
-
-import pandas as pd
-from premailer import transform
 import requests
 from bs4 import BeautifulSoup
-import jupytext
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import pandas as pd
+from premailer import transform
+import jupytext
 from tqdm import tqdm
 
 
@@ -23,7 +22,6 @@ TOP_URL = "https://www.kaggle.com"
 TIMEOUT = 15
 HEADER = """
 ## My GitHub repository: [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler) automatically updates this notebook by using [GitHub Actions](https://github.com/features/actions) and [Kaggle API](https://github.com/Kaggle/kaggle-api). Any feedback would be appreciated.
-## Last Updated: {}
 """.strip()  # NOQA
 
 
@@ -387,8 +385,9 @@ def main():
         # Save the result with a timestamp.
         os.makedirs(out_dir, exist_ok=True)
         out_path = os.path.join(out_dir, f"{comp_slug}.md")
+        timestamp = "## Last Updated: {}".format(utcnow)
         with open(out_path, "w") as f:
-            f.write((2 * "\n").join([HEADER.format(utcnow())] + profiles))
+            f.write((2 * "\n").join([HEADER, timestamp] + profiles))
 
         # Convert markdown to notebook.
         to_notebook(out_path)
