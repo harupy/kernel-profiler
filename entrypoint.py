@@ -385,7 +385,7 @@ def main():
         # Save the result with a timestamp.
         os.makedirs(out_dir, exist_ok=True)
         out_path = os.path.join(out_dir, f"{comp_slug}.md")
-        timestamp = "## Last Updated: {}".format(utcnow)
+        timestamp = "## Last Updated: {}".format(utcnow())
         with open(out_path, "w") as f:
             f.write((2 * "\n").join([HEADER, timestamp] + profiles))
 
