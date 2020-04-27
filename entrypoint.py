@@ -194,6 +194,8 @@ def extract_commit_data(soup):
         deleted = row.select("span:nth-of-type(3)")[0].text.strip()
         href = version.get("href")
 
+        version = version.text.strip()
+
         if href is None:
             continue
 
@@ -212,7 +214,7 @@ def extract_commit_data(soup):
 
         commits.append(
             (
-                version.text.strip(),
+                extract_number(version),
                 score,
                 committed_at,
                 format_run_time(run_time),
@@ -290,6 +292,11 @@ def highlight_best_score(row, best_score):
         ("background-color: #d5fdd5" if should_highlight else "")
         for _ in range(len(row))  # len(row) returns the number of columns.
     ]
+
+
+def extract_number(text):
+    m = re.search(r"\d+", text)
+    return m.group(0) if m else text
 
 
 def main():
