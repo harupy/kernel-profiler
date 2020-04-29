@@ -6,32 +6,32 @@ branding:
 description: Profile Kernels
 inputs:
   slug:
-    description: Competition slug.
+    description: "Competition slug."
     required: true
 
   max_num_kernels:
-    description: How many kernels maximum to profile for each competition.
+    description: "How many kernels maximum to profile for each competition."
     required: false
     default: 20
 
   out_dir:
-    description: Directory to store the output.
+    description: "Directory to store the output."
     required: false
     default: output
 
 outputs:
   markdown_path:
-    description: Output markdown file path
+    description: "Output markdown file path"
 
   markdown_name:
-    description: Output markdown file name
-
+    description: "Output markdown file name
+"
   notebook_path:
-    description: Output notebook file path
+    description: "Output notebook file path"
 
   notebook_name:
-    description: Output notebook file name
+    description: "Output notebook file name"
 
 runs:
-  using: "docker"
-  image: "Dockerfile"
+  using: docker
+  image: Dockerfile
