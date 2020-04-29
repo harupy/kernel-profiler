@@ -407,6 +407,10 @@ def main():
     max_num_kernels = args.max_num_kernels
     out_dir = args.out_dir
 
+    print(comp_slug)
+    print(max_num_kernels)
+    print(out_dir)
+
     profiles = []
 
     for kernel_html, kernel_meta in iter_kernels(comp_slug, max_num_kernels):
