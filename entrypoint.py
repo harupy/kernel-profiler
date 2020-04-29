@@ -141,11 +141,10 @@ def make_anchor_tag(href, text):
     return '<a href="{}">{}</a>'.format(href, text)
 
 
-def make_table(data, header):
-    rows = [make_row(header)]
-    rows += [make_row(["-" for _ in range(len(header))])]
-    rows += [make_row(items) for items in data]
-    return "\n".join(rows)
+def make_table(data, headers):
+    return "\n".join(
+        [make_row(headers), make_row([" :-- "] * len(headers)), *map(make_row, data)]
+    )
 
 
 def make_thumbnail(thumbnail_src, tier_src, author_id):
