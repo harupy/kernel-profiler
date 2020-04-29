@@ -407,9 +407,9 @@ def main():
 
         # Make a commit table.
         commits, headers = extract_commits(soup)
-        df = pd.DataFrame(commits, columns=headers)
         commit_table = transform(
-            df.style.apply(
+            pd.DataFrame(commits, columns=headers)
+            .style.apply(
                 highlight_best_score, best_score=kernel_meta["best_score"], axis=1
             )
             .hide_index()
