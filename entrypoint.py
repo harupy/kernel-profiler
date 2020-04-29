@@ -308,20 +308,9 @@ def extract_number(text):
     return m.group(0) if m else text
 
 
-def main():
-    if on_github_action():
-        comp_slug = get_action_input("slug")
-        max_num_kernels = int(get_action_input("max_num_kernels"))
-        out_dir = get_action_input("out_dir")
-    else:
-        args = parse_args()
-        comp_slug = args.comp_slug
-        max_num_kernels = args.max_num_kernels
-        out_dir = args.out_dir
-
+def iter_kernels(comp_slug, max_num_kernels):
     comp_url = f"https://www.kaggle.com/c/{comp_slug}/notebooks"
 
-    profiles = []
     try:
         # Open the notebooks tab.
         driver.get(comp_url)
@@ -349,14 +338,11 @@ def main():
         kernels = extract_kernels(make_soup(driver.page_source))
         num_kernels = min(max_num_kernels, len(kernels))
 
-        for ker_idx, kernel in enumerate(kernels):
-            if (ker_idx + 1) > max_num_kernels:
-                break
-
+        for ker_idx, kernel_meta in enumerate(kernels[:num_kernels]):
             print(f"Processing ({ker_idx + 1} / {num_kernels})")
 
             # Open the kernel.
-            driver.get(kernel["url"])
+            driver.get(kernel_meta["url"])
 
             # Display the commit table.
             WebDriverWait(driver, TIMEOUT).until(
@@ -376,40 +362,66 @@ def main():
             )
 
             # Get the page source containing the commit table.
-            soup = make_soup(driver.page_source)
+            yield driver.page_source, kernel_meta
 
-            # Make a commit table.
-            commits, headers = extract_commits(soup)
-            df = pd.DataFrame(commits, columns=headers)
-            commit_table = transform(
-                df.style.apply(
-                    highlight_best_score, best_score=kernel["best_score"], axis=1
-                )
-                .hide_index()
-                .render()
+    except Exception:
+        print(traceback.format_exc())
+        with open("error.html", "w") as f:
+            f.write(driver.page_source)
+    finally:
+        driver.quit()
+
+
+def main():
+    if on_github_action():
+        comp_slug = get_action_input("slug")
+        max_num_kernels = int(get_action_input("max_num_kernels"))
+        out_dir = get_action_input("out_dir")
+    else:
+        args = parse_args()
+        comp_slug = args.comp_slug
+        max_num_kernels = args.max_num_kernels
+        out_dir = args.out_dir
+
+    profiles = []
+
+    for kernel_html, kernel_meta in iter_kernels(comp_slug, max_num_kernels):
+        soup = make_soup(kernel_html)
+
+        # Make a commit table.
+        commits, headers = extract_commits(soup)
+        df = pd.DataFrame(commits, columns=headers)
+        commit_table = transform(
+            df.style.apply(
+                highlight_best_score, best_score=kernel_meta["best_score"], axis=1
             )
+            .hide_index()
+            .render()
+        )
 
-            meta_table = make_table(*format_kernel_metadata(kernel))
-            kernel_link = make_link(kernel["name"], kernel["url"])
-            thumbnail = make_thumbnail(
-                kernel["thumbnail_src"], kernel["tier_src"], kernel["author_id"]
-            )
-            profiles.append(
-                make_profile(kernel_link, thumbnail, commit_table, meta_table)
-            )
+        meta_table = make_table(*format_kernel_metadata(kernel_meta))
+        kernel_link = make_link(kernel_meta["name"], kernel_meta["url"])
+        thumbnail = make_thumbnail(
+            kernel_meta["thumbnail_src"],
+            kernel_meta["tier_src"],
+            kernel_meta["author_id"],
+        )
 
-        # Save the result with a timestamp.
-        os.makedirs(out_dir, exist_ok=True)
-        md_path = os.path.join(out_dir, f"{comp_slug}.md")
-        timestamp = "## Last Updated: {}".format(utcnow())
-        with open(md_path, "w") as f:
-            f.write((2 * "\n").join([HEADER, timestamp] + profiles))
+        profiles.append(make_profile(kernel_link, thumbnail, commit_table, meta_table))
 
-        # Convert markdown to notebook.
-        nb_path = replace_extension(md_path, ".ipynb")
-        md_to_notebook(md_path, nb_path)
+    # Save the result with a timestamp.
+    os.makedirs(out_dir, exist_ok=True)
+    md_path = os.path.join(out_dir, f"{comp_slug}.md")
+    timestamp = "## Last Updated: {}".format(utcnow())
+    with open(md_path, "w") as f:
+        f.write((2 * "\n").join([HEADER, timestamp] + profiles))
 
-        # Set action outputs.
+    # Convert markdown to notebook.
+    nb_path = replace_extension(md_path, ".ipynb")
+    md_to_notebook(md_path, nb_path)
+
+    # Set action outputs.
+    if on_github_action():
         set_action_outputs(
             {
                 "markdown_path": md_path,
@@ -418,13 +430,6 @@ def main():
                 "notebook_name": os.path.basename(nb_path),
             }
         )
-
-    except Exception:
-        print(traceback.format_exc())
-        with open("error.html", "w") as f:
-            f.write(driver.page_source)
-    finally:
-        driver.quit()
 
 
 if __name__ == "__main__":
