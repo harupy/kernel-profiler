@@ -29,6 +29,7 @@ jobs:
           max_num_kernels: 1
           out_dir: output
 
+      # Store an output markdown file as an artifact so we can verify it renders properly.
       - name: Store output markdown file
         uses: actions/upload-artifact@v2
         with:
