@@ -1,6 +1,5 @@
 import os
 import argparse
-import traceback
 import re
 from datetime import datetime
 from collections import namedtuple
