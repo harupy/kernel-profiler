@@ -143,7 +143,7 @@ def make_anchor_tag(href, text):
 
 def make_table(data, headers):
     return "\n".join(
-        [make_row(headers), make_row([" :-- "] * len(headers)), *map(make_row, data),]
+        [make_row(headers), make_row([" :-- "] * len(headers)), *map(make_row, data)]
     )
 
 
