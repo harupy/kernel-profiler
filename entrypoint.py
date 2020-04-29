@@ -178,6 +178,8 @@ def format_kernel_metadata(meta):
     ]
     headers = ["Key", "Value"]
 
+    assert len(data[0]) == len(headers)
+
     return data, headers
 
 
@@ -233,6 +235,9 @@ def extract_commits(soup):
         "Deleted",
         "Link",
     ]
+
+    assert len(commits[0]) == len(headers)
+
     return commits, headers
 
 
