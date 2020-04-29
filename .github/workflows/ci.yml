@@ -22,7 +22,8 @@ jobs:
       - name: Black
         run: black --check .
 
-      - uses: ./
+      - id: make_profile
+        uses: ./
         with:
           slug: m5-forecasting-accuracy
           max_num_kernels: 1
