@@ -47,7 +47,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def create_driver():
+def create_chrome_driver():
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
@@ -70,7 +70,7 @@ def make_soup(html):
     return BeautifulSoup(html, "lxml")
 
 
-def get_kernel_meta(soup):
+def extract_kernel_metadata(soup):
     medal = soup.select("img.kernel-list-item__medals")
 
     if len(medal) > 0:
@@ -157,7 +157,7 @@ def make_thumbnail(thumbnail_src, tier_src, author_id):
     )
 
 
-def format_meta_data(meta):
+def format_kernel_metadata(meta):
     author_link = make_link(
         meta["author_name"], os.path.join(TOP_URL, meta["author_id"])
     )
@@ -181,7 +181,7 @@ def format_meta_data(meta):
     return data, headers
 
 
-def extract_commit_data(soup):
+def extract_commits(soup):
     pattern = re.compile(r"VersionsPaneContent_IdeVersionsTable.+")
     rows = soup.find("table", {"class": pattern}).select("tbody > div")
     commits = []
@@ -282,7 +282,7 @@ def extract_kernels(soup):
 
         name = ker.select("div.kernel-list-item__name")[0].text
         url = TOP_URL + ker.select("a.block-link__anchor")[0].get("href")
-        kernels.append({"name": name, "url": url, **get_kernel_meta(ker)})
+        kernels.append({"name": name, "url": url, **extract_kernel_metadata(ker)})
     return kernels
 
 
@@ -370,7 +370,7 @@ def main():
             soup = make_soup(driver.page_source)
 
             # Make a commit table.
-            commits, headers = extract_commit_data(soup)
+            commits, headers = extract_commits(soup)
             df = pd.DataFrame(commits, columns=headers)
             commit_table = transform(
                 df.style.apply(
@@ -380,7 +380,7 @@ def main():
                 .render()
             )
 
-            meta_table = make_table(*format_meta_data(kernel))
+            meta_table = make_table(*format_kernel_metadata(kernel))
             kernel_link = make_link(kernel["name"], kernel["url"])
             thumbnail = make_thumbnail(
                 kernel["thumbnail_src"], kernel["tier_src"], kernel["author_id"]
@@ -408,5 +408,5 @@ def main():
 
 
 if __name__ == "__main__":
-    driver = create_driver()
+    driver = create_chrome_driver()
     main()
