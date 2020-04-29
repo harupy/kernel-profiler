@@ -399,7 +399,7 @@ def main():
     input_types = {
         "comp_slug": str,
         "max_num_kernels": int,
-        "oud_dir": str,
+        "out_dir": str,
     }
     args = get_action_inputs(input_types) if on_github_action() else parse_args()
 
