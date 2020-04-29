@@ -129,8 +129,7 @@ def make_link(text, url):
 
 
 def make_row(items):
-    row = "|".join(map(str, items))
-    return f"|{row}|"
+    return "|".join(["", *map(str, items), ""])
 
 
 def make_image_tag(alt, src):
