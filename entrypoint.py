@@ -3,6 +3,8 @@ import argparse
 import traceback
 import re
 from datetime import datetime
+from collections import namedtuple
+
 
 import requests
 from bs4 import BeautifulSoup
@@ -276,6 +278,11 @@ def get_action_input(name):
     return os.getenv(f"INPUT_{name.upper()}")
 
 
+def get_action_inputs(input_types):
+    Args = namedtuple("Args", list(input_types.keys()))
+    return Args(*[t(get_action_input(k)) for k, t in input_types.items()])
+
+
 def set_action_output(key, value):
     os.system(f'echo "::set-output name={key}::{value}"')
 
@@ -389,15 +396,16 @@ def iter_kernels(comp_slug, max_num_kernels):
 
 
 def main():
-    if on_github_action():
-        comp_slug = get_action_input("slug")
-        max_num_kernels = int(get_action_input("max_num_kernels"))
-        out_dir = get_action_input("out_dir")
-    else:
-        args = parse_args()
-        comp_slug = args.comp_slug
-        max_num_kernels = args.max_num_kernels
-        out_dir = args.out_dir
+    input_types = {
+        "comp_slug": str,
+        "max_num_kernels": int,
+        "oud_dir": str,
+    }
+    args = get_action_inputs(input_types) if on_github_action() else parse_args()
+
+    comp_slug = args.comp_slug
+    max_num_kernels = args.max_num_kernels
+    out_dir = args.out_dir
 
     profiles = []
 
