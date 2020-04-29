@@ -414,7 +414,7 @@ def main():
     md_path = os.path.join(out_dir, f"{comp_slug}.md")
     timestamp = "## Last Updated: {}".format(utcnow())
     with open(md_path, "w") as f:
-        f.write((2 * "\n").join([HEADER, timestamp] + profiles))
+        f.write((2 * "\n").join([HEADER, timestamp, *profiles]))
 
     # Convert markdown to notebook.
     nb_path = replace_extension(md_path, ".ipynb")
