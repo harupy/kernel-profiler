@@ -30,6 +30,6 @@ jobs:
           out_dir: output
 
       - name: Store output
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           path: ${{ steps.make_profile.outputs.markdown_path }}
