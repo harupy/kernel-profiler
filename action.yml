@@ -19,6 +19,13 @@ inputs:
     required: false
     default: output
 
+outputs:
+  markdown_path:
+    description: Path to output markdown file
+
+  notebook_path:
+    description: Path to output notebook file
+
 runs:
   using: "docker"
   image: "Dockerfile"
