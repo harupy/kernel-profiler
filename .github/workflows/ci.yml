@@ -29,7 +29,8 @@ jobs:
           max_num_kernels: 1
           out_dir: output
 
-      - name: Store output
+      - name: Store output markdown file
         uses: actions/upload-artifact@v2
         with:
+          name: ${{ steps.make_profile.outputs.markdown_name }}
           path: ${{ steps.make_profile.outputs.markdown_path }}
