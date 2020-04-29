@@ -278,7 +278,12 @@ def get_action_input(name):
     return os.getenv(f"INPUT_{name.upper()}")
 
 
-def get_action_inputs(input_types):
+def get_action_inputs():
+    input_types = {
+        "comp_slug": str,
+        "max_num_kernels": int,
+        "out_dir": str,
+    }
     Args = namedtuple("Args", list(input_types.keys()))
     return Args(*[t(get_action_input(k)) for k, t in input_types.items()])
 
@@ -396,12 +401,7 @@ def iter_kernels(comp_slug, max_num_kernels):
 
 
 def main():
-    input_types = {
-        "comp_slug": str,
-        "max_num_kernels": int,
-        "out_dir": str,
-    }
-    args = get_action_inputs(input_types) if on_github_action() else parse_args()
+    args = get_action_inputs() if on_github_action() else parse_args()
 
     comp_slug = args.comp_slug
     max_num_kernels = args.max_num_kernels
