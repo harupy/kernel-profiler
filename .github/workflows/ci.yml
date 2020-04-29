@@ -26,3 +26,9 @@ jobs:
         with:
           slug: m5-forecasting-accuracy
           max_num_kernels: 1
+
+      - name: Store output
+          uses: actions/upload-artifact@v1
+          with:
+            name: m5-forecasting-accuracy.md
+            path: ./output/m5-forecasting-accuracy.md
