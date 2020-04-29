@@ -19,7 +19,6 @@ from tqdm import tqdm
 
 driver = None
 TOP_URL = "https://www.kaggle.com"
-TIMEOUT = 15
 HEADER = """
 ## My GitHub repository: [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler) automatically updates this notebook by using [GitHub Actions](https://github.com/features/actions) and [Kaggle API](https://github.com/Kaggle/kaggle-api). Any feedback would be appreciated.
 """.strip()  # NOQA
@@ -316,6 +315,7 @@ def extract_number(text):
 def iter_kernels(comp_slug, max_num_kernels):
     comp_url = f"https://www.kaggle.com/c/{comp_slug}/notebooks"
 
+    TIMEOUT = 15  # seconds
     try:
         # Open the notebooks tab.
         driver.get(comp_url)
