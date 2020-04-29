@@ -287,7 +287,7 @@ def extract_kernels(soup):
 
 
 def highlight_best_score(row, best_score):
-    should_highlight = row["Score"] == best_score
+    should_highlight = float(row["Score"]) == float(best_score)
     return [
         ("background-color: #d5fdd5" if should_highlight else "")
         for _ in range(len(row))  # len(row) returns the number of columns.
