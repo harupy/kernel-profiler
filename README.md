@@ -16,7 +16,7 @@ pip install -r requirements.txt -r requirements-dev.txt
 ## How to run
 
 ```bash
-python entrypoint.py -s titanic
+python entrypoint.py -c titanic
 ```
 
 ## Lint
