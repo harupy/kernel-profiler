@@ -404,7 +404,7 @@ def main():
         nb_path = replace_extension(md_path, ".ipynb")
         md_to_notebook(md_path, nb_path)
 
-        # Set action outputs
+        # Set action outputs.
         set_action_output("markdown_path", md_path)
         set_action_output("notebook_path", nb_path)
 
