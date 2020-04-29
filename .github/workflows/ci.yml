@@ -26,6 +26,7 @@ jobs:
         with:
           slug: m5-forecasting-accuracy
           max_num_kernels: 1
+          out_dir: output
 
       - name: Store output
         uses: actions/upload-artifact@v1
