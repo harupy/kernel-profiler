@@ -265,6 +265,11 @@ def set_action_output(key, value):
     os.system(f'echo "::set-output name={key}::{value}"')
 
 
+def set_action_outputs(outputs):
+    for key, value in outputs.items():
+        os.system(f'echo "::set-output name={key}::{value}"')
+
+
 def replace_extension(path, ext):
     if not ext.startswith("."):
         ext = "." + ext
@@ -405,8 +410,14 @@ def main():
         md_to_notebook(md_path, nb_path)
 
         # Set action outputs.
-        set_action_output("markdown_path", md_path)
-        set_action_output("notebook_path", nb_path)
+        set_action_outputs(
+            {
+                "markdown_path": md_path,
+                "markdown_name": os.path.basename(md_path),
+                "notebook_path": nb_path,
+                "notebook_name": os.path.basename(nb_path),
+            }
+        )
 
     except Exception:
         print(traceback.format_exc())

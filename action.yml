@@ -21,10 +21,16 @@ inputs:
 
 outputs:
   markdown_path:
-    description: Path to output markdown file
+    description: Output markdown file path
+
+  markdown_name:
+    description: Output markdown file name
 
   notebook_path:
-    description: Path to output notebook file
+    description: Output notebook file path
+
+  notebook_name:
+    description: Output notebook file name
 
 runs:
   using: "docker"
