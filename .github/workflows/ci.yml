@@ -32,5 +32,4 @@ jobs:
       - name: Store output
         uses: actions/upload-artifact@v1
         with:
-          name: m5-forecasting-accuracy.md
           path: ${{ steps.make_profile.outputs.markdown_path }}
