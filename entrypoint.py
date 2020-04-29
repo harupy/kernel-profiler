@@ -19,7 +19,7 @@ from tqdm import tqdm
 
 driver = None
 TOP_URL = "https://www.kaggle.com"
-HEADER = """
+DESCRIPTION = """
 ## My GitHub repository: [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler) automatically updates this notebook by using [GitHub Actions](https://github.com/features/actions) and [Kaggle API](https://github.com/Kaggle/kaggle-api). Any feedback would be appreciated.
 """.strip()  # NOQA
 
@@ -431,7 +431,7 @@ def main():
     md_path = os.path.join(out_dir, f"{comp_slug}.md")
     timestamp = "## Last Updated: {}".format(utc_now())
     with open(md_path, "w") as f:
-        f.write((2 * "\n").join([HEADER, timestamp, *profiles]))
+        f.write((2 * "\n").join([DESCRIPTION, timestamp, *profiles]))
 
     # Convert markdown to notebook.
     nb_path = replace_extension(md_path, ".ipynb")
