@@ -277,7 +277,7 @@ def replace_extension(path, ext):
     return root + ext
 
 
-def md_to_notebook(md_path, nb_path):
+def markdown_to_notebook(md_path, nb_path):
     notebook = jupytext.read(md_path, fmt="md")
     jupytext.write(notebook, nb_path)
 
@@ -418,7 +418,7 @@ def main():
 
     # Convert markdown to notebook.
     nb_path = replace_extension(md_path, ".ipynb")
-    md_to_notebook(md_path, nb_path)
+    markdown_to_notebook(md_path, nb_path)
 
     # Set action outputs.
     if on_github_action():
