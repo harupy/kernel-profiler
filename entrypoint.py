@@ -106,12 +106,14 @@ def utc_now():
 
 def extract_public_score(html):
     m = re.search(r'"publicScore":"(.+?)"', html)
-    return m.group(1) if m else ""
+    if m is not None:
+        return m.group(1)
 
 
 def extract_best_public_score(html):
     m = re.search(r'"bestPublicScore":([^,]+)', html)
-    return m.group(1) if m else ""
+    if m is not None:
+        return m.group(1)
 
 
 def format_run_time(run_time_str):
@@ -210,7 +212,7 @@ def extract_commits(soup):
         resp = requests.get(url)
         score = extract_public_score(resp.text)
 
-        if score == "":
+        if score is None:
             continue
 
         commits.append(
