@@ -4,7 +4,6 @@ import re
 from datetime import datetime
 from collections import namedtuple
 
-
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
