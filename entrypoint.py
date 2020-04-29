@@ -265,7 +265,7 @@ def set_action_output(key, value):
 
 def set_action_outputs(outputs):
     for key, value in outputs.items():
-        os.system(f'echo "::set-output name={key}::{value}"')
+        set_action_output(key, value)
 
 
 def replace_extension(path, ext):
