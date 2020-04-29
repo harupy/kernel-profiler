@@ -49,7 +49,7 @@ jobs:
 
       - uses: ./
         with:
-          slug: ${{ matrix.competition.slug }}
+          comp_slug: ${{ matrix.competition.slug }}
           out_dir: output
 
       - uses: harupy/push-kaggle-kernel@master

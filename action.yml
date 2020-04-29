@@ -5,7 +5,7 @@ branding:
   color: green
 description: Profile Kernels
 inputs:
-  slug:
+  comp_slug:
     description: "Competition slug."
     required: true
 
@@ -25,6 +25,7 @@ outputs:
 
   markdown_name:
     description: "Output markdown file name."
+
   notebook_path:
     description: "Output notebook file path."
 

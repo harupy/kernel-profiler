@@ -25,7 +25,7 @@ jobs:
       - id: make_profile
         uses: ./
         with:
-          slug: m5-forecasting-accuracy
+          comp_slug: m5-forecasting-accuracy
           max_num_kernels: 1
           out_dir: output
 
