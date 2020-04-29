@@ -135,12 +135,16 @@ def make_row(items):
     return "|".join(["", *map(str, items), ""])
 
 
-def make_image_tag(alt, src):
-    return '<img alt="{}" src="{}" align="left">'.format(alt, src)
+def format_attributes(attrs):
+    return " ".join([f'{key}="{val}"' for key, val in attrs.items()])
 
 
-def make_anchor_tag(href, text):
-    return '<a href="{}">{}</a>'.format(href, text)
+def make_image_tag(attrs):
+    return f"<img {format_attributes(attrs)}>"
+
+
+def make_anchor_tag(content, attrs):
+    return f"<a {format_attributes(attrs)}>{content}</a>"
 
 
 def make_table(data, headers):
@@ -150,11 +154,11 @@ def make_table(data, headers):
 
 
 def make_thumbnail(thumbnail_src, tier_src, author_id):
-    thumbnail = '<img src="{}" width="72">'.format(thumbnail_src)
-    tier = '<img src="{}" width="72">'.format(tier_src)
+    thumbnail = make_image_tag({"src": thumbnail_src, "width": 72})
+    tier = make_image_tag({"src": tier_src, "width": 72})
     author_url = os.path.join(TOP_URL, author_id)
-    return '<a href="{}" style="display: inline-block">{}{}</a>'.format(
-        author_url, thumbnail, tier
+    return make_anchor_tag(
+        thumbnail + tier, {"href": author_url, "style": "display: inline-block"}
     )
 
 
@@ -164,7 +168,12 @@ def format_kernel_metadata(meta):
     )
 
     if meta["medal_src"] != "":
-        medal_img = make_image_tag("medal", meta["medal_src"])
+        attrs = {
+            "alt": "medal",
+            "src": meta["medal_src"],
+            "align": "left",
+        }
+        medal_img = make_image_tag(attrs)
     else:
         medal_img = "-"
 
@@ -223,7 +232,7 @@ def extract_commits(soup):
                 format_run_time(run_time),
                 added,
                 deleted,
-                make_anchor_tag(url, "Open"),
+                make_anchor_tag("Open", {"href": url}),
             )
         )
 
