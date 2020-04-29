@@ -101,7 +101,7 @@ def extract_kernel_metadata(soup):
     }
 
 
-def utcnow():
+def utc_now():
     return datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S (UTC)")
 
 
@@ -417,7 +417,7 @@ def main():
     # Save the result with a timestamp.
     os.makedirs(out_dir, exist_ok=True)
     md_path = os.path.join(out_dir, f"{comp_slug}.md")
-    timestamp = "## Last Updated: {}".format(utcnow())
+    timestamp = "## Last Updated: {}".format(utc_now())
     with open(md_path, "w") as f:
         f.write((2 * "\n").join([HEADER, timestamp, *profiles]))
 
