@@ -261,6 +261,15 @@ def get_action_input(name):
     return os.getenv(f"INPUT_{name.upper()}")
 
 
+def set_action_output(key, value):
+    os.system(f'echo "::set-output name={key}::{value}"')
+
+
+def set_action_outputs(outputs):
+    for key, value in outputs.items():
+        os.system(f'echo "::set-output name={key}::{value}"')
+
+
 def replace_extension(path, ext):
     if not ext.startswith("."):
         ext = "." + ext
@@ -268,9 +277,9 @@ def replace_extension(path, ext):
     return root + ext
 
 
-def to_notebook(path):
-    notebook = jupytext.read(path)
-    jupytext.write(notebook, replace_extension(path, ".ipynb"))
+def md_to_notebook(md_path, nb_path):
+    notebook = jupytext.read(md_path, fmt="md")
+    jupytext.write(notebook, nb_path)
 
 
 def extract_kernels(soup):
@@ -391,13 +400,24 @@ def main():
 
         # Save the result with a timestamp.
         os.makedirs(out_dir, exist_ok=True)
-        out_path = os.path.join(out_dir, f"{comp_slug}.md")
+        md_path = os.path.join(out_dir, f"{comp_slug}.md")
         timestamp = "## Last Updated: {}".format(utcnow())
-        with open(out_path, "w") as f:
+        with open(md_path, "w") as f:
             f.write((2 * "\n").join([HEADER, timestamp] + profiles))
 
         # Convert markdown to notebook.
-        to_notebook(out_path)
+        nb_path = replace_extension(md_path, ".ipynb")
+        md_to_notebook(md_path, nb_path)
+
+        # Set action outputs.
+        set_action_outputs(
+            {
+                "markdown_path": md_path,
+                "markdown_name": os.path.basename(md_path),
+                "notebook_path": nb_path,
+                "notebook_name": os.path.basename(nb_path),
+            }
+        )
 
     except Exception:
         print(traceback.format_exc())

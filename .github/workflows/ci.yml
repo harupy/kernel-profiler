@@ -22,14 +22,16 @@ jobs:
       - name: Black
         run: black --check .
 
-      - uses: ./
+      - id: make_profile
+        uses: ./
         with:
           slug: m5-forecasting-accuracy
           max_num_kernels: 1
           out_dir: output
 
-      - name: Store output
-        uses: actions/upload-artifact@v1
+      # Store an output markdown file as an artifact so we can verify it renders properly.
+      - name: Store output markdown file
+        uses: actions/upload-artifact@v2
         with:
-          name: m5-forecasting-accuracy.md
-          path: ./output/m5-forecasting-accuracy.md
+          name: ${{ steps.make_profile.outputs.markdown_name }}
+          path: ${{ steps.make_profile.outputs.markdown_path }}
