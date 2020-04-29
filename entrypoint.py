@@ -70,14 +70,16 @@ def make_soup(html):
     return BeautifulSoup(html, "lxml")
 
 
-def extract_kernel_metadata(soup):
+def extract_medal_src(soup):
     medal = soup.select("img.kernel-list-item__medals")
 
     if len(medal) > 0:
         # Replace "notebook" with "discussion" to use a bigger medal image.
-        medal_src = TOP_URL + medal[0].get("src").replace("notebooks", "discussion")
-    else:
-        medal_src = ""
+        return medal[0].get("src").replace("notebooks", "discussion")
+
+
+def extract_kernel_metadata(soup):
+    medal_src = extract_medal_src(soup)
 
     return {
         "author_name": (
@@ -95,7 +97,7 @@ def extract_kernel_metadata(soup):
         ),
         "best_score": soup.select("div.kernel-list-item__score")[0].text.strip(),
         "language": soup.select("span.tooltip-container")[2].text.strip(),
-        "medal_src": medal_src,
+        "medal_src": (TOP_URL + medal_src) if medal_src is not None else "",
     }
 
 
