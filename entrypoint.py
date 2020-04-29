@@ -1,10 +1,8 @@
 import os
 import argparse
-import traceback
 import re
 from datetime import datetime
 from collections import namedtuple
-
 
 import requests
 from bs4 import BeautifulSoup
@@ -339,65 +337,60 @@ def iter_kernels(comp_slug, max_num_kernels):
     comp_url = f"https://www.kaggle.com/c/{comp_slug}/notebooks"
 
     TIMEOUT = 15  # seconds
-    try:
-        # Open the notebooks tab.
-        driver.get(comp_url)
 
-        # Click 'Sort By' select box.
+    # Open the notebooks tab.
+    driver.get(comp_url)
+
+    # Click 'Sort By' select box.
+    WebDriverWait(driver, TIMEOUT).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "div.Select-value"))
+    )
+    sort_by = driver.find_element_by_css_selector("div.Select-value")
+    sort_by.click()
+
+    # Select "Best score".
+    WebDriverWait(driver, TIMEOUT).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "div.Select-menu-outer"))
+    )
+    options = driver.find_elements_by_css_selector("div.Select-menu-outer div")
+    best_score_opt = [opt for opt in options if opt.text == "Best Score"][0]
+    best_score_opt.click()
+
+    WebDriverWait(driver, TIMEOUT).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "a.block-link__anchor"))
+    )
+
+    # Extract kernels.
+    kernels = extract_kernels(make_soup(driver.page_source))
+    num_kernels = min(max_num_kernels, len(kernels))
+
+    for ker_idx, kernel_meta in enumerate(kernels[:num_kernels]):
+        print(f"Processing ({ker_idx + 1} / {num_kernels})")
+
+        # Open the kernel.
+        driver.get(kernel_meta["url"])
+
+        # Display the commit table.
         WebDriverWait(driver, TIMEOUT).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "div.Select-value"))
+            EC.presence_of_element_located(
+                (By.XPATH, "//div[contains(@class, 'VersionsInfoBox')]")
+            )
         )
-        sort_by = driver.find_element_by_css_selector("div.Select-value")
-        sort_by.click()
-
-        # Select "Best score".
-        WebDriverWait(driver, TIMEOUT).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "div.Select-menu-outer"))
+        commit_link = driver.find_element_by_xpath(
+            "//div[contains(@class, 'VersionsInfoBox')]"
         )
-        options = driver.find_elements_by_css_selector("div.Select-menu-outer div")
-        best_score_opt = [opt for opt in options if opt.text == "Best Score"][0]
-        best_score_opt.click()
+        commit_link.click()
 
         WebDriverWait(driver, TIMEOUT).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "a.block-link__anchor"))
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, "div.vote-button__voters-modal-title")
+            )
         )
 
-        # Extract kernels.
-        kernels = extract_kernels(make_soup(driver.page_source))
-        num_kernels = min(max_num_kernels, len(kernels))
+        # Get the page source containing the commit table.
+        yield driver.page_source, kernel_meta
 
-        for ker_idx, kernel_meta in enumerate(kernels[:num_kernels]):
-            print(f"Processing ({ker_idx + 1} / {num_kernels})")
-
-            # Open the kernel.
-            driver.get(kernel_meta["url"])
-
-            # Display the commit table.
-            WebDriverWait(driver, TIMEOUT).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "//div[contains(@class, 'VersionsInfoBox')]")
-                )
-            )
-            commit_link = driver.find_element_by_xpath(
-                "//div[contains(@class, 'VersionsInfoBox')]"
-            )
-            commit_link.click()
-
-            WebDriverWait(driver, TIMEOUT).until(
-                EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, "div.vote-button__voters-modal-title")
-                )
-            )
-
-            # Get the page source containing the commit table.
-            yield driver.page_source, kernel_meta
-
-    except Exception:
-        print(traceback.format_exc())
-        with open("error.html", "w") as f:
-            f.write(driver.page_source)
-    finally:
-        driver.quit()
+    driver.quit()
 
 
 def main():
