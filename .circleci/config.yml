@@ -1,0 +1,31 @@
+version: 2.1
+
+workflows:
+  ci:
+    jobs:
+      - build_doc
+
+jobs:
+  build_doc:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            pip install -r requirements.txt -r requirements-dev.txt
+            pip install jupyter nbconvert
+            pip install -e .
+
+      - run:
+          name: Run kernel-profiler
+          command: profile -c m5-forecasting-accuracy -m 1
+
+      - run:
+          name: Convert notebook to HTML
+          command: jupyter nbconvert --to html --execute output/m5-forecasting-accuracy.ipynb
+
+      - store_artifacts:
+          path: output/m5-forecasting-accuracy.html
