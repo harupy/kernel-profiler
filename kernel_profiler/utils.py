@@ -9,6 +9,7 @@ def replace_ext(path, ext):
     return root + ext
 
 
-def extract_integer(text):
+def extract_int(text):
     m = re.search(r"\d+", text)
-    return m.group(0) if m else text
+    if m is not None:
+        return m.group(0)

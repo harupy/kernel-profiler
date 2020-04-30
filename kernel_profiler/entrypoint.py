@@ -185,9 +185,11 @@ def extract_commits(soup):
         if score is None:
             continue
 
+        ver_num = utils.extract_int(version)
+
         commits.append(
             (
-                utils.extract_integer(version),
+                ver_num if ver_num is not None else version,
                 score,
                 committed_at,
                 format_run_time(run_time),
