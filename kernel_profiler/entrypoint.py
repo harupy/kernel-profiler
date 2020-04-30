@@ -16,7 +16,7 @@ from premailer import transform
 import jupytext
 from tqdm import tqdm
 
-from kernel_profiler import markdown as md
+from kernel_profiler import markdown as md, html
 
 
 TOP_URL = "https://www.kaggle.com"
@@ -66,8 +66,8 @@ def create_chrome_driver():
     return webdriver.Chrome(options=options)
 
 
-def make_soup(html):
-    return BeautifulSoup(html, "lxml")
+def make_soup(markup):
+    return BeautifulSoup(markup, "lxml")
 
 
 def extract_medal_src(soup):
@@ -105,14 +105,14 @@ def utc_now():
     return datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S (UTC)")
 
 
-def extract_public_score(html):
-    m = re.search(r'"publicScore":"(.+?)"', html)
+def extract_public_score(s):
+    m = re.search(r'"publicScore":"(.+?)"', s)
     if m is not None:
         return m.group(1)
 
 
-def extract_best_public_score(html):
-    m = re.search(r'"bestPublicScore":([^,]+)', html)
+def extract_best_public_score(s):
+    m = re.search(r'"bestPublicScore":([^,]+)', s)
     if m is not None:
         return m.group(1)
 
@@ -128,27 +128,6 @@ def format_run_time(run_time_str):
         return f"{round(run_time / 3600, 1)} h"
 
 
-def format_attributes(attrs):
-    return " ".join([f'{key}="{val}"' for key, val in attrs.items()])
-
-
-def make_image_tag(attrs):
-    return f"<img {format_attributes(attrs)}>"
-
-
-def make_anchor_tag(content, attrs):
-    return f"<a {format_attributes(attrs)}>{content}</a>"
-
-
-def make_thumbnail(thumbnail_src, tier_src, author_id):
-    thumbnail = make_image_tag({"src": thumbnail_src, "width": 72})
-    tier = make_image_tag({"src": tier_src, "width": 72})
-    author_url = os.path.join(TOP_URL, author_id)
-    return make_anchor_tag(
-        thumbnail + tier, {"href": author_url, "style": "display: inline-block"}
-    )
-
-
 def format_kernel_metadata(meta):
     author_link = md.make_link(
         meta["author_name"], os.path.join(TOP_URL, meta["author_id"])
@@ -160,7 +139,7 @@ def format_kernel_metadata(meta):
             "src": meta["medal_src"],
             "align": "left",
         }
-        medal_img = make_image_tag(attrs)
+        medal_img = html.make_image_tag(attrs)
     else:
         medal_img = "-"
 
@@ -219,7 +198,7 @@ def extract_commits(soup):
                 format_run_time(run_time),
                 added,
                 deleted,
-                make_anchor_tag("Open", {"href": url}),
+                html.make_anchor_tag("Open", {"href": url}),
             )
         )
 
@@ -407,10 +386,10 @@ def main():
 
         meta_table = md.make_table(*format_kernel_metadata(kernel_meta))
         kernel_link = md.make_link(kernel_meta["name"], kernel_meta["url"])
-        thumbnail = make_thumbnail(
+        thumbnail = html.make_thumbnail(
             kernel_meta["thumbnail_src"],
             kernel_meta["tier_src"],
-            kernel_meta["author_id"],
+            os.path.join(TOP_URL, kernel_meta["author_id"]),
         )
 
         profiles.append(make_profile(kernel_link, thumbnail, commit_table, meta_table))
