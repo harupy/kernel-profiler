@@ -1,4 +1,6 @@
+import json
 import os
+from pprint import pprint
 
 import requests
 
@@ -22,7 +24,6 @@ class GitHubAPI(requests.Session):
 
 
 def main():
-
     GITHUB_API_TOKEN = os.environ.get("GITHUB_API_TOKEN")
     USER_NAME = os.environ.get("CIRCLE_PROJECT_USERNAME")
     REPO_NAME = os.environ.get("CIRCLE_PROJECT_REPONAME")
@@ -34,7 +35,20 @@ def main():
     r = api.get(f"/repos/{USER_NAME}/{REPO_NAME}")
     REPO_ID = r.json()["id"]
 
-    print(REPO_ID)
+    path = "0/output/m5-forecasting-accuracy.html"
+    target_url = f"https://{BUILD_NUM}-{REPO_ID}-gh.circle-artifacts.com/{path}"
+
+    params = {
+        "state": "success",
+        "target_url": target_url,
+        "description": "Open the output HTML",
+        "context": "ci/circleci: build_doc",
+    }
+
+    # Create a link to the output HTML as a commit status
+    end_point = f"/repos/{USER_NAME}/{REPO_NAME}/statuses/{SHA}"
+    r = requests.post(end_point, data=json.dumps(params))
+    pprint(r.json())
 
 
 if __name__ == "__main__":
