@@ -15,7 +15,7 @@ commands:
       command:
         type: string
     steps:
-      - run: docker-compose run $SERVICE << parameters.command >>
+      - run: docker-compose run kernel-profiler << parameters.command >>
 
 parameters:
   comp_slug:
@@ -28,9 +28,6 @@ parameters:
 jobs:
   build_doc:
     executor: ubuntu
-
-    environment:
-      SERVICE: kernel-profiler
 
     steps:
       - checkout
