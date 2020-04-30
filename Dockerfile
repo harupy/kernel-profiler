@@ -11,16 +11,13 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     apt-get update && \
     apt-get install -y google-chrome-stable
 
-
 # Install Chrome Driver.
 RUN CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE) && \
     wget https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip && \
     unzip chromedriver_linux64.zip && rm chromedriver_linux64.zip
 
-# Install Python dependencies.
-COPY ./requirements.txt .
-COPY ./requirements-dev.txt .
-RUN pip install -r requirements.txt -r requirements-dev.txt
+# Enable command line interface.
+COPY . .
+RUN pip install -e .
 
-COPY entrypoint.py /entrypoint.py
-ENTRYPOINT python /entrypoint.py
+ENTRYPOINT profile
