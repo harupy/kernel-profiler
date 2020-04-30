@@ -34,7 +34,9 @@ jobs:
 
       - docker_compose_build
 
-      - run: ls -a
+      - run:
+          name: Make an output directory
+          command: mkdir output
 
       - docker_compose_run:
           command: profile -c m5-forecasting-accuracy -m 1 -o output

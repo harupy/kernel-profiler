@@ -5,6 +5,8 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     volumes:
-      - .:/kernel-profiler
+      - ./output:/kernel-profiler/output
+      # https://jbhannah.net/articles/python-docker-disappearing-egg-info
+      # - /kernel-profiler/UNKNOWN.egg-info
     image: kernel-profiler-image
     container_name: kernel-profiler-container
