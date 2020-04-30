@@ -61,7 +61,8 @@ def main():
     # Create a link to the output HTML as a commit status
     end_point = f"/repos/{USER_NAME}/{REPO_NAME}/statuses/{SHA}"
     r = api.post(end_point, data=json.dumps(params))
-    print(r.status_code)
+
+    assert r.status_code == 201
 
 
 if __name__ == "__main__":
