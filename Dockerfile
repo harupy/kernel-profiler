@@ -22,8 +22,6 @@ RUN CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com
 # To avoid that, move it to the root.
 RUN mv chromedriver /
 
-RUN pip install --upgrade pip
-
 # Install kerne-profiler and enable command line interface.
 COPY . .
 RUN pip install -e .
