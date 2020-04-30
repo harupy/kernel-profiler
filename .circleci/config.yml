@@ -29,7 +29,7 @@ jobs:
 
       - run:
           name: Run kernel-profiler
-          command: profile -c m5-forecasting-accuracy -m 1 - o << pipeline.parameters.out_dir >>
+          command: profile -c m5-forecasting-accuracy -m 1 -o << pipeline.parameters.out_dir >>
 
       - run:
           name: Convert notebook to HTML
