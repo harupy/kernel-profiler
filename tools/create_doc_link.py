@@ -10,7 +10,8 @@ class GitHubAPI(requests.Session):
         super().__init__()
         self.base_url = "https://api.github.com"
 
-        # GitHub API requires User-Agent: https://developer.github.com/v3/#user-agent-required
+        # GitHub API requires User-Agent:
+        # https://developer.github.com/v3/#user-agent-required
         self.headers = {
             "Authorization": f"token {token}",
             "User-Agent": "",
