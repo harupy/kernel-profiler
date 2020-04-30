@@ -1,12 +1,10 @@
 FROM python:3.7.6
 
-ARG ENV
-
 WORKDIR /kernel-profiler
 
-RUN apt-get update
-
 ENV PATH="/:${PATH}"
+
+RUN apt-get update
 
 # Install Chrome.
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add && \
@@ -20,15 +18,10 @@ RUN CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com
     wget https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip && \
     unzip chromedriver_linux64.zip && rm chromedriver_linux64.zip
 
-# Volume will override the working directory and erase chromedriver.
-# To avoid that, move it to the root.
-RUN mv chromedriver /
-RUN ls
-
 COPY . .
 
-# Install depedencies.
+# Install dependencies.
 RUN pip install -r requirements.txt -r requirements-dev.txt
 
-# Install kerne-profiler and enable command line interface.
+# Install kerne-profiler and enable the command line interface.
 RUN pip install -e .
