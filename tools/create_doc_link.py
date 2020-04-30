@@ -47,7 +47,7 @@ def main():
 
     # Create a link to the output HTML as a commit status
     end_point = f"/repos/{USER_NAME}/{REPO_NAME}/statuses/{SHA}"
-    r = requests.post(end_point, data=json.dumps(params))
+    r = api.post(end_point, data=json.dumps(params))
     pprint(r.json())
 
 
