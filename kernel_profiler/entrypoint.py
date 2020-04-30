@@ -16,7 +16,7 @@ from premailer import transform
 import jupytext
 from tqdm import tqdm
 
-from kernel_profiler import markdown as md
+from kernel_profiler.markdown import make_link, make_table
 
 
 TOP_URL = "https://www.kaggle.com"
@@ -150,7 +150,7 @@ def make_thumbnail(thumbnail_src, tier_src, author_id):
 
 
 def format_kernel_metadata(meta):
-    author_link = md.make_link(
+    author_link = make_link(
         meta["author_name"], os.path.join(TOP_URL, meta["author_id"])
     )
 
@@ -405,8 +405,8 @@ def main():
             .render()
         )
 
-        meta_table = md.make_table(*format_kernel_metadata(kernel_meta))
-        kernel_link = md.make_link(kernel_meta["name"], kernel_meta["url"])
+        meta_table = make_table(*format_kernel_metadata(kernel_meta))
+        kernel_link = make_link(kernel_meta["name"], kernel_meta["url"])
         thumbnail = make_thumbnail(
             kernel_meta["thumbnail_src"],
             kernel_meta["tier_src"],
