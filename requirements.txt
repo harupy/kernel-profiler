@@ -1,16 +1,16 @@
 # Scraping.
-requests
-selenium
-beautifulsoup4
-lxml
+requests==2.23.0
+selenium==3.141.0
+beautifulsoup4==4.8.2
+lxml==4.5.0
 
 # Highlight the best score.
-pandas
-jinja2
-premailer
+pandas==1.0.3
+Jinja2==2.11.2
+premailer==3.6.1
 
 # Convert markdown files to notebooks.
-jupytext
+jupytext==1.4.0
 
 # Display progress.
-tqdm
+tqdm==4.43.0
