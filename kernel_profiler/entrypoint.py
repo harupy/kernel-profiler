@@ -2,7 +2,6 @@ import os
 import argparse
 import re
 from datetime import datetime
-from collections import namedtuple
 
 import requests
 from bs4 import BeautifulSoup
@@ -16,8 +15,9 @@ from premailer import transform
 import jupytext
 from tqdm import tqdm
 
+from kernel_profiler import markdown as md, html, github_action as ga, utils
 
-driver = None
+
 TOP_URL = "https://www.kaggle.com"
 DESCRIPTION = """
 ## My GitHub repository: [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler) automatically updates this notebook by using [GitHub Actions](https://github.com/features/actions) and [Kaggle API](https://github.com/Kaggle/kaggle-api). Any feedback would be appreciated.
@@ -65,8 +65,8 @@ def create_chrome_driver():
     return webdriver.Chrome(options=options)
 
 
-def make_soup(html):
-    return BeautifulSoup(html, "lxml")
+def make_soup(markup):
+    return BeautifulSoup(markup, "lxml")
 
 
 def extract_medal_src(soup):
@@ -100,18 +100,14 @@ def extract_kernel_metadata(soup):
     }
 
 
-def utc_now():
-    return datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S (UTC)")
-
-
-def extract_public_score(html):
-    m = re.search(r'"publicScore":"(.+?)"', html)
+def extract_public_score(s):
+    m = re.search(r'"publicScore":"(.+?)"', s)
     if m is not None:
         return m.group(1)
 
 
-def extract_best_public_score(html):
-    m = re.search(r'"bestPublicScore":([^,]+)', html)
+def extract_best_public_score(s):
+    m = re.search(r'"bestPublicScore":([^,]+)', s)
     if m is not None:
         return m.group(1)
 
@@ -127,43 +123,8 @@ def format_run_time(run_time_str):
         return f"{round(run_time / 3600, 1)} h"
 
 
-def make_link(text, url):
-    return f"[{text}]({url})"
-
-
-def make_row(items):
-    return "|".join(["", *map(str, items), ""])
-
-
-def format_attributes(attrs):
-    return " ".join([f'{key}="{val}"' for key, val in attrs.items()])
-
-
-def make_image_tag(attrs):
-    return f"<img {format_attributes(attrs)}>"
-
-
-def make_anchor_tag(content, attrs):
-    return f"<a {format_attributes(attrs)}>{content}</a>"
-
-
-def make_table(data, headers):
-    return "\n".join(
-        [make_row(headers), make_row([" :-- "] * len(headers)), *map(make_row, data)]
-    )
-
-
-def make_thumbnail(thumbnail_src, tier_src, author_id):
-    thumbnail = make_image_tag({"src": thumbnail_src, "width": 72})
-    tier = make_image_tag({"src": tier_src, "width": 72})
-    author_url = os.path.join(TOP_URL, author_id)
-    return make_anchor_tag(
-        thumbnail + tier, {"href": author_url, "style": "display: inline-block"}
-    )
-
-
 def format_kernel_metadata(meta):
-    author_link = make_link(
+    author_link = md.make_link(
         meta["author_name"], os.path.join(TOP_URL, meta["author_id"])
     )
 
@@ -173,7 +134,7 @@ def format_kernel_metadata(meta):
             "src": meta["medal_src"],
             "align": "left",
         }
-        medal_img = make_image_tag(attrs)
+        medal_img = html.make_image_tag(attrs)
     else:
         medal_img = "-"
 
@@ -226,13 +187,13 @@ def extract_commits(soup):
 
         commits.append(
             (
-                extract_number(version),
+                utils.extract_integer(version),
                 score,
                 committed_at,
                 format_run_time(run_time),
                 added,
                 deleted,
-                make_anchor_tag("Open", {"href": url}),
+                html.make_anchor_tag("Open", {"href": url}),
             )
         )
 
@@ -268,40 +229,6 @@ The highlighted row(s) corresponds to the best score.
 """.strip()
 
 
-def on_github_action():
-    return "GITHUB_ACTION" in os.environ
-
-
-def get_action_input(name):
-    return os.getenv(f"INPUT_{name.upper()}")
-
-
-def get_action_inputs():
-    input_types = {
-        "comp_slug": str,
-        "max_num_kernels": int,
-        "out_dir": str,
-    }
-    Args = namedtuple("Args", list(input_types.keys()))
-    return Args(*[t(get_action_input(k)) for k, t in input_types.items()])
-
-
-def set_action_output(key, value):
-    os.system(f'echo "::set-output name={key}::{value}"')
-
-
-def set_action_outputs(outputs):
-    for key, value in outputs.items():
-        set_action_output(key, value)
-
-
-def replace_extension(path, ext):
-    if not ext.startswith("."):
-        ext = "." + ext
-    root = os.path.splitext(path)[0]
-    return root + ext
-
-
 def markdown_to_notebook(md_path, nb_path):
     notebook = jupytext.read(md_path, fmt="md")
     jupytext.write(notebook, nb_path)
@@ -328,12 +255,9 @@ def highlight_best_score(row, best_score):
     ]
 
 
-def extract_number(text):
-    m = re.search(r"\d+", text)
-    return m.group(0) if m else text
-
-
 def iter_kernels(comp_slug, max_num_kernels):
+    driver = create_chrome_driver()
+
     comp_url = f"https://www.kaggle.com/c/{comp_slug}/notebooks"
 
     TIMEOUT = 15  # seconds
@@ -394,7 +318,12 @@ def iter_kernels(comp_slug, max_num_kernels):
 
 
 def main():
-    args = get_action_inputs() if on_github_action() else parse_args()
+    input_types = {
+        "comp_slug": str,
+        "max_num_kernels": int,
+        "out_dir": str,
+    }
+    args = ga.get_action_inputs(input_types) if ga.on_github_action() else parse_args()
 
     comp_slug = args.comp_slug
     max_num_kernels = args.max_num_kernels
@@ -416,12 +345,12 @@ def main():
             .render()
         )
 
-        meta_table = make_table(*format_kernel_metadata(kernel_meta))
-        kernel_link = make_link(kernel_meta["name"], kernel_meta["url"])
-        thumbnail = make_thumbnail(
+        meta_table = md.make_table(*format_kernel_metadata(kernel_meta))
+        kernel_link = md.make_link(kernel_meta["name"], kernel_meta["url"])
+        thumbnail = html.make_thumbnail(
             kernel_meta["thumbnail_src"],
             kernel_meta["tier_src"],
-            kernel_meta["author_id"],
+            os.path.join(TOP_URL, kernel_meta["author_id"]),
         )
 
         profiles.append(make_profile(kernel_link, thumbnail, commit_table, meta_table))
@@ -429,17 +358,19 @@ def main():
     # Save the result with a timestamp.
     os.makedirs(out_dir, exist_ok=True)
     md_path = os.path.join(out_dir, f"{comp_slug}.md")
-    timestamp = "## Last Updated: {}".format(utc_now())
+    timestamp = "## Last Updated: {}".format(
+        datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S (UTC)")
+    )
     with open(md_path, "w") as f:
         f.write((2 * "\n").join([DESCRIPTION, timestamp, *profiles]))
 
     # Convert markdown to notebook.
-    nb_path = replace_extension(md_path, ".ipynb")
+    nb_path = utils.replace_ext(md_path, ".ipynb")
     markdown_to_notebook(md_path, nb_path)
 
     # Set action outputs.
-    if on_github_action():
-        set_action_outputs(
+    if ga.on_github_action():
+        ga.set_action_outputs(
             {
                 "markdown_path": md_path,
                 "markdown_name": os.path.basename(md_path),
@@ -450,5 +381,4 @@ def main():
 
 
 if __name__ == "__main__":
-    driver = create_chrome_driver()
     main()
