@@ -5,6 +5,14 @@ workflows:
     jobs:
       - build_doc
 
+parameters:
+  comp_slug:
+    type: string
+    default: "m5-forecasting-accuracy"
+  out_dir:
+    type: string
+    default: "output"
+
 jobs:
   build_doc:
     docker:
@@ -21,11 +29,13 @@ jobs:
 
       - run:
           name: Run kernel-profiler
-          command: profile -c m5-forecasting-accuracy -m 1
+          command: profile -c m5-forecasting-accuracy -m 1 - o << pipeline.parameters.out_dir >>
 
       - run:
           name: Convert notebook to HTML
-          command: jupyter nbconvert --to html --execute output/m5-forecasting-accuracy.ipynb
+          command: |
+            jupyter nbconvert --to html --execute \
+            << pipeline.parameters.out_dir >>/<< pipeline.parameters.comp_slug >>.ipynb
 
       - store_artifacts:
-          path: output/m5-forecasting-accuracy.html
+          path: << pipeline.parameters.out_dir >>/<< pipeline.parameters.comp_slug >>.html
