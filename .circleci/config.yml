@@ -29,7 +29,7 @@ parameters:
     default: "output"
 
 jobs:
-  build_doc:
+  build_example:
     executor: ubuntu
 
     steps:
@@ -60,9 +60,9 @@ jobs:
               -e CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM \
               -e CIRCLE_SHA1=$CIRCLE_SHA1 \
             kernel-profiler \
-            python tools/create_doc_link.py --path output/m5-forecasting-accuracy.html
+            python tools/create_example_link.py --path output/m5-forecasting-accuracy.html
 
 workflows:
   ci:
     jobs:
-      - build_doc
+      - build_example

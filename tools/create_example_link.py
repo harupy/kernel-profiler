@@ -55,7 +55,7 @@ def main():
         "state": "success",
         "target_url": target_url,
         "description": "Open the output HTML",
-        "context": "ci/circleci: create_doc_link",
+        "context": "ci/circleci: create_example_link",
     }
 
     # Create a link to the output HTML as a commit status
