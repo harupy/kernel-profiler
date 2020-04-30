@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: larsoner/circleci-artifacts-redirector-action@master
+        env:
+          ACTIONS_STEP_DEBUG: true
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           artifact-path: 0/output/m5-forecasting-accuracy.html
