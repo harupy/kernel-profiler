@@ -1,4 +1,3 @@
-
 def format_attributes(attrs):
     return " ".join([f'{key}="{val}"' for key, val in attrs.items()])
 

@@ -1,4 +1,3 @@
-
 def make_link(text, url):
     return f"[{text}]({url})"
 
