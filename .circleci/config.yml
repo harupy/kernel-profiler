@@ -33,14 +33,18 @@ parameters:
 jobs:
   build_doc:
     executor: ubuntu
+
     environment:
       DOCKER_COMPOSE_FILE: .circleci/docker-compose.yml
       SERVICE: kernel-profiler
       COMP_SLUG: m5-forecasting-accuracy
       OUT_DIR: output
+
     steps:
       - checkout
+
       - docker_compose_build
+
       - docker_compose_run:
           command: profile -c $COMP_SLUG -m 1 -o $OUT_DIR
 
