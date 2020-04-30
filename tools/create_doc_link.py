@@ -1,6 +1,5 @@
 import json
 import os
-from pprint import pprint
 
 import requests
 
@@ -49,7 +48,7 @@ def main():
     # Create a link to the output HTML as a commit status
     end_point = f"/repos/{USER_NAME}/{REPO_NAME}/statuses/{SHA}"
     r = api.post(end_point, data=json.dumps(params))
-    pprint(r.json())
+    print(r.status_code)
 
 
 if __name__ == "__main__":
