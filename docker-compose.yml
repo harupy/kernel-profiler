@@ -2,7 +2,8 @@ version: "3"
 services:
   kernel-profiler:
     build:
-      context: Dockerfile.ci
+      context: .
+      dockerfile: Dockerfile.ci
     volumes:
       - .:/kernel-profiler
     image: kernel-profiler-image
