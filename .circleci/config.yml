@@ -34,6 +34,8 @@ jobs:
 
       - docker_compose_build
 
+      - run: ls -a
+
       - docker_compose_run:
           command: profile -c m5-forecasting-accuracy -m 1 -o output
 
