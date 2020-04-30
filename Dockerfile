@@ -1,7 +1,5 @@
 FROM python:3.7.6
 
-ARG ENV
-
 WORKDIR /kernel-profiler
 
 RUN apt-get update
