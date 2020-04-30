@@ -25,7 +25,13 @@ jobs:
       - name: Run tests
         run: pytest tests
 
-      - id: make_profile
+      - name: Run as command line script
+        run: |
+          pip install -e .
+          profile -c m5-forecasting-uncertainty -m 1
+
+      - name: Run as GitHub Action
+        id: make_profile
         uses: ./
         with:
           comp_slug: m5-forecasting-accuracy
