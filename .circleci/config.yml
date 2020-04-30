@@ -32,8 +32,7 @@ parameters:
 
 jobs:
   build_doc:
-    executor:
-      name: ubuntu
+    executor: ubuntu
     environment:
       DOCKER_COMPOSE_FILE: .circleci/docker-compose.yml
       SERVICE: kernel-profiler
