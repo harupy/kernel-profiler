@@ -13,14 +13,17 @@ jobs:
         with:
           python-version: 3.7
 
-      - name: Install dev dependencies
-        run: pip install -r requirements-dev.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
 
       - name: Flake8
         run: flake8 .
 
       - name: Black
         run: black --check .
+
+      - name: Run tests
+        run: pytest tests
 
       - id: make_profile
         uses: ./
