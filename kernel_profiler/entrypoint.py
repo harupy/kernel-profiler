@@ -16,7 +16,7 @@ from premailer import transform
 import jupytext
 from tqdm import tqdm
 
-from kernel_profiler import markdown as md, html
+from kernel_profiler import markdown as md, html, github_action as ga
 
 
 TOP_URL = "https://www.kaggle.com"
@@ -234,33 +234,6 @@ The highlighted row(s) corresponds to the best score.
 """.strip()
 
 
-def on_github_action():
-    return "GITHUB_ACTION" in os.environ
-
-
-def get_action_input(name):
-    return os.getenv(f"INPUT_{name.upper()}")
-
-
-def get_action_inputs():
-    input_types = {
-        "comp_slug": str,
-        "max_num_kernels": int,
-        "out_dir": str,
-    }
-    Args = namedtuple("Args", list(input_types.keys()))
-    return Args(*[t(get_action_input(k)) for k, t in input_types.items()])
-
-
-def set_action_output(key, value):
-    os.system(f'echo "::set-output name={key}::{value}"')
-
-
-def set_action_outputs(outputs):
-    for key, value in outputs.items():
-        set_action_output(key, value)
-
-
 def replace_extension(path, ext):
     if not ext.startswith("."):
         ext = "." + ext
@@ -362,7 +335,12 @@ def iter_kernels(comp_slug, max_num_kernels):
 
 
 def main():
-    args = get_action_inputs() if on_github_action() else parse_args()
+    input_types = {
+        "comp_slug": str,
+        "max_num_kernels": int,
+        "out_dir": str,
+    }
+    args = ga.get_action_inputs(input_types) if ga.on_github_action() else parse_args()
 
     comp_slug = args.comp_slug
     max_num_kernels = args.max_num_kernels
@@ -406,8 +384,8 @@ def main():
     markdown_to_notebook(md_path, nb_path)
 
     # Set action outputs.
-    if on_github_action():
-        set_action_outputs(
+    if ga.on_github_action():
+        ga.set_action_outputs(
             {
                 "markdown_path": md_path,
                 "markdown_name": os.path.basename(md_path),
