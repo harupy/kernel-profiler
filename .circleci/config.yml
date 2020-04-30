@@ -8,7 +8,7 @@ workflows:
 executors:
   ubuntu:
     machine:
-      - image: ubuntu-1604:202004-01
+      image: ubuntu-1604:202004-01
 
 commands:
   docker_compose_build:
@@ -32,7 +32,8 @@ parameters:
 
 jobs:
   build_doc:
-    executor: ubuntu
+    executor:
+      name: ubuntu
     environment:
       DOCKER_COMPOSE_FILE: .circleci/docker-compose.yml
       SERVICE: kernel-profiler
