@@ -5,8 +5,9 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     volumes:
+      # NOTE: Mounting the entire directory (`./:kernel-profiler`) erases UNKNOWN.egg-info
+      # that `pip install -e .` generates, and causes an error when running the command line interface.
+      # See: https://jbhannah.net/articles/python-docker-disappearing-egg-info
       - ./output:/kernel-profiler/output
-      # https://jbhannah.net/articles/python-docker-disappearing-egg-info
-      # - /kernel-profiler/UNKNOWN.egg-info
     image: kernel-profiler-image
     container_name: kernel-profiler-container
