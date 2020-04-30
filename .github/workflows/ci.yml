@@ -27,6 +27,7 @@ jobs:
 
       - name: Run as command line script
         run: |
+          unset GITHUB_ACTION
           pip install -e .
           profile -c m5-forecasting-uncertainty -m 1
 
