@@ -15,7 +15,7 @@ from premailer import transform
 import jupytext
 from tqdm import tqdm
 
-from kernel_profiler import markdown as md, html, github_action as ga
+from kernel_profiler import markdown as md, html, github_action as ga, utils
 
 
 TOP_URL = "https://www.kaggle.com"
@@ -98,10 +98,6 @@ def extract_kernel_metadata(soup):
         "language": soup.select("span.tooltip-container")[2].text.strip(),
         "medal_src": (TOP_URL + medal_src) if medal_src is not None else "",
     }
-
-
-def utc_now():
-    return datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S (UTC)")
 
 
 def extract_public_score(s):
@@ -191,7 +187,7 @@ def extract_commits(soup):
 
         commits.append(
             (
-                extract_number(version),
+                utils.extract_integer(version),
                 score,
                 committed_at,
                 format_run_time(run_time),
@@ -233,13 +229,6 @@ The highlighted row(s) corresponds to the best score.
 """.strip()
 
 
-def replace_extension(path, ext):
-    if not ext.startswith("."):
-        ext = "." + ext
-    root = os.path.splitext(path)[0]
-    return root + ext
-
-
 def markdown_to_notebook(md_path, nb_path):
     notebook = jupytext.read(md_path, fmt="md")
     jupytext.write(notebook, nb_path)
@@ -264,11 +253,6 @@ def highlight_best_score(row, best_score):
         ("background-color: #d5fdd5" if should_highlight else "")
         for _ in range(len(row))  # len(row) returns the number of columns.
     ]
-
-
-def extract_number(text):
-    m = re.search(r"\d+", text)
-    return m.group(0) if m else text
 
 
 def iter_kernels(comp_slug, max_num_kernels):
@@ -374,12 +358,14 @@ def main():
     # Save the result with a timestamp.
     os.makedirs(out_dir, exist_ok=True)
     md_path = os.path.join(out_dir, f"{comp_slug}.md")
-    timestamp = "## Last Updated: {}".format(utc_now())
+    timestamp = "## Last Updated: {}".format(
+        datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S (UTC)")
+    )
     with open(md_path, "w") as f:
         f.write((2 * "\n").join([DESCRIPTION, timestamp, *profiles]))
 
     # Convert markdown to notebook.
-    nb_path = replace_extension(md_path, ".ipynb")
+    nb_path = utils.replace_ext(md_path, ".ipynb")
     markdown_to_notebook(md_path, nb_path)
 
     # Set action outputs.
