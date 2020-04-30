@@ -1,10 +1,5 @@
 version: 2.1
 
-workflows:
-  ci:
-    jobs:
-      - build_doc
-
 executors:
   ubuntu:
     machine:
@@ -53,3 +48,8 @@ jobs:
 
       - store_artifacts:
           path: ${OUT_DIR}/${COMP_SLUG}.html
+
+workflows:
+  ci:
+    jobs:
+      - build_doc
