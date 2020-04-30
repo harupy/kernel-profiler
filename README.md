@@ -1,6 +1,7 @@
 # Kernel Profiler
 
 ![Upload](https://github.com/harupy/kernel-profiler/workflows/Upload/badge.svg)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Profile top scoring public kernels on Kaggle.
 
