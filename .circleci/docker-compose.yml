@@ -1,0 +1,9 @@
+version: "3"
+services:
+  kernel-profiler:
+    build:
+      context: .
+    volumes:
+      - .:/kernel-profiler
+    image: kernel-profiler-image
+    container_name: kernel-profiler-container

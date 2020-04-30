@@ -5,6 +5,23 @@ workflows:
     jobs:
       - build_doc
 
+executors:
+  ubuntu:
+    docker:
+      - image: ubuntu-1604:201903-01
+
+commands:
+  docker_compose_build:
+    steps:
+      - run: docker-compose build -f .circleci/docker-compose.yml
+
+  docker_compose_run:
+    parameters:
+      command:
+        type: string
+    steps:
+      - run: docker-compose run $SERVICE << parameters.command >>
+
 parameters:
   comp_slug:
     type: string
@@ -15,27 +32,19 @@ parameters:
 
 jobs:
   build_doc:
-    docker:
-      - image: circleci/python:3.7
+    machine: ubuntu
+    environment:
+      SERVICE: kernel-profiler
+      COMP_SLUG: m5-forecasting-accuracy
+      OUT_DIR: output
     steps:
       - checkout
+      - docker_compose_build
+      - docker_compose_run:
+          command: profile -c $COMP_SLUG -m 1 -o $OUT_DIR
 
-      - run:
-          name: Install dependencies
-          command: |
-            pip install -r requirements.txt -r requirements-dev.txt
-            pip install jupyter nbconvert
-            pip install -e .
-
-      - run:
-          name: Run kernel-profiler
-          command: profile -c m5-forecasting-accuracy -m 1 -o << pipeline.parameters.out_dir >>
-
-      - run:
-          name: Convert notebook to HTML
-          command: |
-            jupyter nbconvert --to html --execute \
-            << pipeline.parameters.out_dir >>/<< pipeline.parameters.comp_slug >>.ipynb
+      - docker_compose_run:
+          command: jupyter nbconvert --to html --execute ${OUT_DIR}/${COMP_SLUG}.ipynb
 
       - store_artifacts:
-          path: << pipeline.parameters.out_dir >>/<< pipeline.parameters.comp_slug >>.html
+          path: ${OUT_DIR}/${COMP_SLUG}.html
