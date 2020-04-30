@@ -32,7 +32,7 @@ parameters:
 
 jobs:
   build_doc:
-    machine: ubuntu
+    executor: ubuntu
     environment:
       SERVICE: kernel-profiler
       COMP_SLUG: m5-forecasting-accuracy
