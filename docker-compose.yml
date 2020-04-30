@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    volumes:
-      - .:/kernel-profiler
+    # volumes:
+    #   - .:/kernel-profiler
     image: kernel-profiler-image
     container_name: kernel-profiler-container
