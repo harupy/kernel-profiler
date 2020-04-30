@@ -22,6 +22,5 @@ RUN CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com
 
 # Enable command line interface.
 COPY . .
+RUN pip install -r requirements.txt -r requirements-dev.txt
 RUN pip install -e .
-
-ENTRYPOINT profile
