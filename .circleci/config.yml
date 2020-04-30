@@ -8,7 +8,7 @@ executors:
 commands:
   docker_compose_build:
     steps:
-      - run: docker-compose build
+      - run: docker-compose build --build-arg ENV=dev
 
   docker_compose_run:
     parameters:

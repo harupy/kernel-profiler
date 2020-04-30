@@ -1,8 +1,10 @@
 FROM python:3.7.6
 
-RUN apt-get update
+ARG ENV
 
 WORKDIR /kernel-profiler
+
+RUN apt-get update
 
 ENV PATH="/:${PATH}"
 
@@ -20,6 +22,7 @@ RUN CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com
 
 # Enable command line interface.
 COPY . .
+RUN if [ "$ENV" = "dev" ]; then pip install -r requirements.txt -r requirements-dev.txt ; fi
 RUN pip install -e .
 
 ENTRYPOINT profile
