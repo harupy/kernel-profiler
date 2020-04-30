@@ -25,7 +25,7 @@ jobs:
       - name: Run tests
         run: pytest tests
 
-      - name: Run as command line script
+      - name: Run as CLI
         run: |
           unset GITHUB_ACTION
           pip install -e .
