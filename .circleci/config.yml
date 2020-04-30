@@ -13,14 +13,14 @@ executors:
 commands:
   docker_compose_build:
     steps:
-      - run: docker-compose build -f .circleci/docker-compose.yml
+      - run: docker-compose -f $DOCKER_COMPOSE_FILE build
 
   docker_compose_run:
     parameters:
       command:
         type: string
     steps:
-      - run: docker-compose run $SERVICE << parameters.command >>
+      - run: docker-compose -f $DOCKER_COMPOSE_FILE run $SERVICE << parameters.command >>
 
 parameters:
   comp_slug:
@@ -34,6 +34,7 @@ jobs:
   build_doc:
     executor: ubuntu
     environment:
+      DOCKER_COMPOSE_FILE: .circleci/docker-compose.yml
       SERVICE: kernel-profiler
       COMP_SLUG: m5-forecasting-accuracy
       OUT_DIR: output
