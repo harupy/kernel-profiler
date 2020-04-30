@@ -23,7 +23,7 @@ RUN CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com
 # Volume will override the working directory and erase chromedriver.
 # To avoid that, move it to the root.
 RUN mv chromedriver /
-RUN ls | grep chromedriver
+RUN ls / | grep chromedriver
 
 COPY . .
 
