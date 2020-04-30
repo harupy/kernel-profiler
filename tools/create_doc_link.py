@@ -7,7 +7,12 @@ class GitHubAPI(requests.Session):
     def __init__(self, token):
         super().__init__()
         self.base_url = "https://api.github.com"
-        self.headers = {"Authorization": f"token {token}"}
+
+        # GitHub API requires User-Agent: https://developer.github.com/v3/#user-agent-required
+        self.headers = {
+            "Authorization": f"token {token}",
+            "User-Agent": "",
+        }
 
     def get(self, end_point, **kwargs):
         return super().get(self.base_url + end_point, **kwargs)
@@ -19,8 +24,8 @@ class GitHubAPI(requests.Session):
 def main():
 
     GITHUB_API_TOKEN = os.environ.get("GITHUB_API_TOKEN")
-    REPO_NAME = os.environ.get("CIRCLE_PROJECT_REPONAME")
     USER_NAME = os.environ.get("CIRCLE_PROJECT_USERNAME")
+    REPO_NAME = os.environ.get("CIRCLE_PROJECT_REPONAME")
     BUILD_NUM = os.environ.get("CIRCLE_BUILD_NUM")
     SHA = os.environ.get("CIRCLE_SHA1")
 
