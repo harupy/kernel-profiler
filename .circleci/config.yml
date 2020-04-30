@@ -12,13 +12,10 @@ commands:
 
   docker_compose_run:
     parameters:
-      options:
-        type: string
-        default: ""
       command:
         type: string
     steps:
-      - run: docker-compose run << parameters.options >> kernel-profiler << parameters.command >>
+      - run: docker-compose run kernel-profiler << parameters.command >>
 
 parameters:
   comp_slug:
