@@ -15,12 +15,19 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     apt-get update && \
     apt-get install -y google-chrome-stable
 
-# Install Chrome Driver.
+# Download chromedriver.
 RUN CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE) && \
     wget https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip && \
     unzip chromedriver_linux64.zip && rm chromedriver_linux64.zip
 
-# Enable command line interface.
+# Volume will override the working directory and erase chromedriver.
+# To avoid that, move it to the root.
+RUN mv chromedriver /
+
 COPY . .
+
+# Install depedencies.
 RUN pip install -r requirements.txt -r requirements-dev.txt
+
+# Install kerne-profiler and enable command line interface.
 RUN pip install -e .
