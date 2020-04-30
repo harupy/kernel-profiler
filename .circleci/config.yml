@@ -12,10 +12,13 @@ commands:
 
   docker_compose_run:
     parameters:
+      options:
+        type: string
+        default: ""
       command:
         type: string
     steps:
-      - run: docker-compose run kernel-profiler << parameters.command >>
+      - run: docker-compose run << parameters.options >> kernel-profiler << parameters.command >>
 
 parameters:
   comp_slug:
@@ -35,7 +38,7 @@ jobs:
       - docker_compose_build
 
       - run:
-          name: Make an output directory
+          name: Make output directory
           command: mkdir output
 
       - docker_compose_run:
@@ -46,6 +49,18 @@ jobs:
 
       - store_artifacts:
           path: output/m5-forecasting-accuracy.html
+
+      - run:
+          name: Create link to output HTML file
+          command: |
+            docker-compose run \
+              -e GITHUB_API_TOKEN=$GITHUB_API_TOKEN \
+              -e CIRCLE_PROJECT_REPONAME=$CIRCLE_PROJECT_REPONAME \
+              -e CIRCLE_PROJECT_USERNAME=$CIRCLE_PROJECT_USERNAME \
+              -e CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM \
+              -e CIRCLE_SHA1=$CIRCLE_SHA1 \
+            kernel-profiler \
+            python tools/create_doc_link.py
 
 workflows:
   ci:
