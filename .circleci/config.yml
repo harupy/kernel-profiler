@@ -31,8 +31,6 @@ jobs:
 
     environment:
       SERVICE: kernel-profiler
-      COMP_SLUG: m5-forecasting-accuracy
-      OUT_DIR: output
 
     steps:
       - checkout
@@ -40,13 +38,13 @@ jobs:
       - docker_compose_build
 
       - docker_compose_run:
-          command: profile -c $COMP_SLUG -m 1 -o $OUT_DIR
+          command: profile -c m5-forecasting-accuracy -m 1 -o output
 
       - docker_compose_run:
-          command: jupyter nbconvert --to html --execute ${OUT_DIR}/${COMP_SLUG}.ipynb
+          command: jupyter nbconvert --to html --execute output/m5-forecasting-accuracy.ipynb
 
       - store_artifacts:
-          path: ${OUT_DIR}/${COMP_SLUG}.html
+          path: output/m5-forecasting-accuracy.html
 
 workflows:
   ci:
