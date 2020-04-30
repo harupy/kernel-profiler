@@ -1,0 +1,53 @@
+version: 2.1
+
+executors:
+  ubuntu:
+    machine:
+      image: ubuntu-1604:202004-01
+
+commands:
+  docker_compose_build:
+    steps:
+      - run: docker-compose build
+
+  docker_compose_run:
+    parameters:
+      command:
+        type: string
+    steps:
+      - run: docker-compose run kernel-profiler << parameters.command >>
+
+parameters:
+  comp_slug:
+    type: string
+    default: "m5-forecasting-accuracy"
+  out_dir:
+    type: string
+    default: "output"
+
+jobs:
+  build_doc:
+    executor: ubuntu
+
+    steps:
+      - checkout
+
+      - docker_compose_build
+
+      - run:
+          name: Make an output directory
+          command: mkdir output
+
+      - docker_compose_run:
+          command: profile -c m5-forecasting-accuracy -m 1 -o output
+
+      - docker_compose_run:
+          command: jupyter nbconvert --to html --execute output/m5-forecasting-accuracy.ipynb
+
+      - store_artifacts:
+          path: output/m5-forecasting-accuracy.html
+
+workflows:
+  ci:
+    jobs:
+      - build_doc
