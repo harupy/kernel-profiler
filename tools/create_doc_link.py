@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 
@@ -23,7 +24,20 @@ class GitHubAPI(requests.Session):
         return super().post(self.base_url + end_point, **kwargs)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Kernel Profiler")
+    parser.add_argument(
+        "-p",
+        "--path",
+        required=True,
+        help="Path to a file you want to create a link for",
+    )
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
+
     GITHUB_API_TOKEN = os.environ.get("GITHUB_API_TOKEN")
     USER_NAME = os.environ.get("CIRCLE_PROJECT_USERNAME")
     REPO_NAME = os.environ.get("CIRCLE_PROJECT_REPONAME")
@@ -35,8 +49,7 @@ def main():
     r = api.get(f"/repos/{USER_NAME}/{REPO_NAME}")
     REPO_ID = r.json()["id"]
 
-    path = "0/output/m5-forecasting-accuracy.html"
-    target_url = f"https://{BUILD_NUM}-{REPO_ID}-gh.circle-artifacts.com/{path}"
+    target_url = f"https://{BUILD_NUM}-{REPO_ID}-gh.circle-artifacts.com/0/{args.path}"
 
     params = {
         "state": "success",
