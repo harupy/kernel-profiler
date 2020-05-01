@@ -47,18 +47,6 @@ jobs:
       - store_artifacts:
           path: output/m5-forecasting-accuracy.html
 
-      - run:
-          name: Create link to example
-          command: |
-            docker-compose run \
-              -e GITHUB_API_TOKEN=$GITHUB_API_TOKEN \
-              -e CIRCLE_PROJECT_REPONAME=$CIRCLE_PROJECT_REPONAME \
-              -e CIRCLE_PROJECT_USERNAME=$CIRCLE_PROJECT_USERNAME \
-              -e CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM \
-              -e CIRCLE_SHA1=$CIRCLE_SHA1 \
-            kernel-profiler \
-            python tools/create_example_link.py --path output/m5-forecasting-accuracy.html
-
 workflows:
   ci:
     jobs:
