@@ -1,0 +1,11 @@
+name: Create Example Link
+on: status
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a link to the example on CircleCI
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
