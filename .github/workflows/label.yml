@@ -19,4 +19,4 @@ jobs:
               sort: "created",
             });
 
-            comments.map(console.log)
+            console.log(comments)
