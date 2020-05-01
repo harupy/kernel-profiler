@@ -18,6 +18,11 @@ pip install -r requirements.txt -r requirements-dev.txt
 
 ```bash
 python entrypoint.py -c titanic
+
+# or
+
+pip install -e .
+profile -c titanic
 ```
 
 ## Lint
