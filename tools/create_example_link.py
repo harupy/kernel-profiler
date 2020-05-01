@@ -54,7 +54,7 @@ def main():
     params = {
         "state": "success",
         "target_url": target_url,
-        "description": "Open the example",
+        "description": "See the example",
         "context": "ci/circleci: create_example_link",
     }
 
