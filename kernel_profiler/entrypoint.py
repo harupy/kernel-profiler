@@ -231,11 +231,6 @@ The highlighted row(s) corresponds to the best score.
 """.strip()
 
 
-def markdown_to_notebook(md_path, nb_path):
-    notebook = jupytext.read(md_path, fmt="md")
-    jupytext.write(notebook, nb_path)
-
-
 def extract_kernels(soup):
     kernels = []
 
@@ -368,7 +363,7 @@ def main():
 
     # Convert markdown to notebook.
     nb_path = utils.replace_ext(md_path, ".ipynb")
-    markdown_to_notebook(md_path, nb_path)
+    utils.markdown_to_notebook(md_path, nb_path)
 
     # Set action outputs.
     if ga.on_github_action():
