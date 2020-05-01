@@ -40,15 +40,17 @@ jobs:
               return labels;
             };
 
-            const allLabels = await github.issues.listLabelsForRepo({
-              owner,
-              repo,
-            });
+            const allLabels = (
+              await github.issues.listLabelsForRepo({
+                owner,
+                repo,
+              })
+            ).map(({ name }) => name);
 
             console.log(allLabels);
 
             const regex = /- \[([ x]*)\] (.+)/gm;
-            const labels = findLabels(regex, pr.data.body).filter(({ name }) => allLabels.data.includes(name));
+            const labels = findLabels(regex, pr.data.body).filter(({ name }) => allLabels.includes(name));
 
             // Delete unchecked labels
             labels
