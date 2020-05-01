@@ -11,3 +11,12 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             console.log(context.issue.number)
+
+            const comments = await github.pulls.listComments({
+              "harupy",
+              "kernel-profiler",
+              context.issue.number,
+              "created",
+            });
+
+            comments.map(console.log)
