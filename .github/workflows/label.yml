@@ -45,7 +45,7 @@ jobs:
               repo,
             });
 
-            console.log(allLabels.data)
+            console.log(allLabels);
 
             const regex = /- \[([ x]*)\] (.+)/gm;
             const labels = findLabels(regex, pr.data.body).filter(({ name }) => allLabels.data.includes(name));
@@ -63,7 +63,6 @@ jobs:
               });
 
             // Add checked labels.
-            console.log(labels.filter(({ checked }) => checked)
             await github.issues.addLabels({
               owner,
               repo,
