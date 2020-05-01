@@ -45,7 +45,7 @@ jobs:
                 owner,
                 repo,
               })
-            ).map(({ name }) => name);
+            ).data.map(({ name }) => name);
 
             console.log(allLabels);
 
