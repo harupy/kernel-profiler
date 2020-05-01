@@ -14,6 +14,14 @@ def test_extract_int():
     assert utils.extract_int("x") is None
 
 
+def test_extract_public_score():
+    assert utils.extract_public_score('"publicScore":"0.123"') == "0.123"
+
+
+def test_extract_best_public_score():
+    assert utils.extract_best_public_score('"bestPublicScore":0.123,') == "0.123"
+
+
 def test_markdown_to_notebook(tmpdir):
     md_path = os.path.join(tmpdir, "test.md")
     nb_path = os.path.join(tmpdir, "test.ipynb")
