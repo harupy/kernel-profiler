@@ -71,5 +71,5 @@ jobs:
               owner,
               repo,
               issue_number,
-              labels: labels.filter(({ checked }) => checked),
+              labels: labels.filter(({ checked }) => checked).map(({ name }) => name),
             });
