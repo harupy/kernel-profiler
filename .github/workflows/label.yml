@@ -32,9 +32,9 @@ jobs:
 
               if (res) {
                 const checked = isChecked(res[1]);
-                const label = res[2];
+                const name = res[2];
 
-                return findLabels(regex, s, [{ label, checked }, ...labels]);
+                return findLabels(regex, s, [{ name, checked }, ...labels]);
               }
 
               return labels;
@@ -46,17 +46,17 @@ jobs:
             });
 
             const regex = /- \[([ x]*)\] (.+)/gm;
-            const labels = findLabels(regex, pr.data.body).map(({ label }) => allLabels.data.includes(label));
+            const labels = findLabels(regex, pr.data.body).map(({ name }) => allLabels.data.includes(name));
 
             // Delete unchecked labels
             labels
               .filter(({ checked }) => !checked)
-              .forEach(async ({ label }) => {
+              .forEach(async (label) => {
                 await github.issues.removeLabel({
                   owner,
                   repo,
                   issue_number,
-                  name: label,
+                  name: label.name,
                 });
               });
 
