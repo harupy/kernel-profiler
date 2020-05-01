@@ -13,10 +13,10 @@ jobs:
             console.log(context.issue.number)
 
             const comments = await github.pulls.listComments({
-              "harupy",
-              "kernel-profiler",
-              context.issue.number,
-              "created",
+              owner: "harupy",
+              repo: "kernel-profiler",
+              pull_number: context.issue.number,
+              sort: "created",
             });
 
             comments.map(console.log)
