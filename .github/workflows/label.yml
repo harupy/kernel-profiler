@@ -46,7 +46,7 @@ jobs:
             });
 
             const regex = /- \[([ x]*)\] (.+)/gm;
-            const labels = findLabels(regex, pr.data.body).map(({ label }) => allLabels.includes(label));
+            const labels = findLabels(regex, pr.data.body).map(({ label }) => allLabels.data.includes(label));
 
             // Delete unchecked labels
             labels
