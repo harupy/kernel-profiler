@@ -54,11 +54,11 @@ def main():
     params = {
         "state": "success",
         "target_url": target_url,
-        "description": "Open the output HTML",
+        "description": "See the example",
         "context": "ci/circleci: create_example_link",
     }
 
-    # Create a link to the output HTML as a commit status
+    # Create a link to the example as a commit status
     end_point = f"/repos/{USER_NAME}/{REPO_NAME}/statuses/{SHA}"
     r = api.post(end_point, data=json.dumps(params))
 

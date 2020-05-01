@@ -48,7 +48,7 @@ jobs:
           path: output/m5-forecasting-accuracy.html
 
       - run:
-          name: Create link to output HTML file
+          name: Create link to example
           command: |
             docker-compose run \
               -e GITHUB_API_TOKEN=$GITHUB_API_TOKEN \
