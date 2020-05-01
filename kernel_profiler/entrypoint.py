@@ -99,18 +99,6 @@ def extract_kernel_metadata(soup):
     }
 
 
-def extract_public_score(s):
-    m = re.search(r'"publicScore":"(.+?)"', s)
-    if m is not None:
-        return m.group(1)
-
-
-def extract_best_public_score(s):
-    m = re.search(r'"bestPublicScore":([^,]+)', s)
-    if m is not None:
-        return m.group(1)
-
-
 def format_run_time(run_time_str):
     run_time = float(run_time_str[:-1])
 
@@ -179,7 +167,7 @@ def extract_commits(soup):
         # Extract the public score.
         url = TOP_URL + href
         resp = requests.get(url)
-        score = extract_public_score(resp.text)
+        score = utils.extract_public_score(resp.text)
 
         if score is None:
             continue
