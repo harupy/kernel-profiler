@@ -1,6 +1,6 @@
 on:
   pull_request:
-    types: [edited]
+    types: [synchronize, edited]
 
 jobs:
   welcome:
