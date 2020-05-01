@@ -19,3 +19,11 @@ jobs:
             });
 
             console.log(comments)
+
+            const pr = await github.pulls.get({
+              owner: "harupy",
+              repo: "kernel-profiler",
+              pull_number: context.issue.number,
+            });
+
+            console.log(pr)
