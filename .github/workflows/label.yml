@@ -10,6 +10,8 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            // https://octokit.github.io/rest.js/v16
+
             console.log(context.issue.number)
 
             const comments = await github.issues.listComments({
@@ -27,3 +29,12 @@ jobs:
             });
 
             console.log(pr)
+
+            const labels = ["bug", "documentation"]
+
+            await github.issues.addLabels({
+              owner: "harupy",
+              repo: "kernel-profiler",
+              issue_number: context.issue.number,
+              labels,
+            });
