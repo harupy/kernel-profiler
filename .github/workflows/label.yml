@@ -12,29 +12,58 @@ jobs:
           script: |
             // https://octokit.github.io/rest.js/v16
 
-            console.log(context.issue.number)
+            const owner = "harupy";
+            const repo = "kernel-profiler";
+            const issue_number = context.issue.number;
+            const pull_number = context.issue.number;
 
-            const comments = await github.issues.listComments({
-              owner: "harupy",
-              repo: "kernel-profiler",
-              issue_number: context.issue.number,
-            });
-
-            console.log(comments)
-
+            // Get a pull request that trigger this action.
             const pr = await github.pulls.get({
-              owner: "harupy",
-              repo: "kernel-profiler",
-              pull_number: context.issue.number,
+              owner,
+              repo,
+              pull_number,
             });
 
-            console.log(pr)
+            // Find labels from the pull request description.
+            const isChecked = x => x.trim() === "x";
 
-            const labels = ["bug", "documentation"]
+            const findLabels = (regex, s, labels = []) => {
+              const res = regex.exec(s);
 
+              if (res) {
+                const checked = isChecked(res[1]);
+                const label = res[2];
+
+                return findLabels(regex, s, [{ label, checked }, ...labels]);
+              }
+
+              return labels;
+            };
+
+            const allLabels = await github.issues.listLabelsForRepo({
+              owner,
+              repo,
+            });
+
+            const regex = /- \[([ x]*)\] (.+)/gm;
+            const labels = findLabels(regex, pr.data.body).map(({ label }) => allLabels.includes(label));
+
+            // Delete unchecked labels
+            labels
+              .filter(({ checked }) => !checked)
+              .forEach(async ({ label }) => {
+                await github.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number,
+                  name: label,
+                });
+              });
+
+            // Add checked labels.
             await github.issues.addLabels({
-              owner: "harupy",
-              repo: "kernel-profiler",
-              issue_number: context.issue.number,
-              labels,
+              owner,
+              repo,
+              issue_number,
+              labels: labels.filter(({ checked }) => checked),
             });
