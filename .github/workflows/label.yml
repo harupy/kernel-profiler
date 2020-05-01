@@ -46,17 +46,17 @@ jobs:
             });
 
             const regex = /- \[([ x]*)\] (.+)/gm;
-            const labels = findLabels(regex, pr.data.body).map(({ name }) => allLabels.data.includes(name));
+            const labels = findLabels(regex, pr.data.body).filter(({ name }) => allLabels.data.includes(name));
 
             // Delete unchecked labels
             labels
               .filter(({ checked }) => !checked)
-              .forEach(async (label) => {
+              .forEach(async ({ name }) => {
                 await github.issues.removeLabel({
                   owner,
                   repo,
                   issue_number,
-                  name: label.name,
+                  name,
                 });
               });
 
