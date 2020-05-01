@@ -12,7 +12,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import pandas as pd
 from premailer import transform
-import jupytext
 from tqdm import tqdm
 
 from kernel_profiler import markdown as md, html, github_action as ga, utils
