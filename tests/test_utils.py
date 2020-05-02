@@ -31,3 +31,10 @@ def test_markdown_to_notebook(tmpdir):
 
     utils.markdown_to_notebook(md_path, nb_path)
     assert os.path.exists(nb_path)
+
+
+def test_round_run_time():
+    assert utils.round_run_time("59s") == "59.0 s"
+    assert utils.round_run_time("60s") == "1.0 m"
+    assert utils.round_run_time("3599s") == "60.0 m"
+    assert utils.round_run_time("3600s") == "1.0 h"
