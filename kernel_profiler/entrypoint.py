@@ -99,17 +99,6 @@ def extract_kernel_metadata(soup):
     }
 
 
-def format_run_time(run_time_str):
-    run_time = float(run_time_str[:-1])
-
-    if run_time < 60:
-        return f"{run_time} s"
-    elif run_time >= 60 and run_time < 3600:
-        return f"{round(run_time / 60, 1)} m"
-    else:
-        return f"{round(run_time / 3600, 1)} h"
-
-
 def format_kernel_metadata(meta):
     author_link = md.make_link(
         meta["author_name"], os.path.join(TOP_URL, meta["author_id"])
@@ -179,7 +168,7 @@ def extract_commits(soup):
                 ver_num if ver_num is not None else version,
                 score,
                 committed_at,
-                format_run_time(run_time),
+                utils.round_run_time(run_time),
                 added,
                 deleted,
                 html.make_anchor_tag("Open", {"href": url}),
