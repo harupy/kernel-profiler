@@ -203,10 +203,13 @@ def make_profile(kernel_link, thumbnail, commit_table, meta_table):
 {thumbnail}
 
 ### Kernel Information
+
 {meta_table}
 
 ### Commit History
+
 The highlighted row(s) corresponds to the best score.
+
 {commit_table}
 """.strip()
 
