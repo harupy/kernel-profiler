@@ -72,12 +72,12 @@ def extract_medal_src(soup):
     medal = soup.select("img.kernel-list-item__medals")
 
     if len(medal) > 0:
-        # Replace "notebook" with "discussion" to use a bigger medal image.
-        return medal[0].get("src").replace("notebooks", "discussion")
+        return medal[0].get("src")
 
 
 def extract_kernel_metadata(soup):
-    medal_src = extract_medal_src(soup)
+    # Replace "notebook" with "discussion" to use a bigger medal image.
+    medal_src = extract_medal_src(soup).replace("notebooks", "discussion")
 
     return {
         "author_name": (
