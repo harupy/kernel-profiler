@@ -1,9 +1,9 @@
-name: CI
+name: Test
 on: [pull_request]
 
 jobs:
   ci:
-    name: CI
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -15,15 +15,6 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt -r requirements-dev.txt
-
-      - name: Flake8
-        run: flake8 .
-
-      - name: Black
-        run: black --check .
-
-      - name: Run tests
-        run: pytest tests
 
       - name: Run as CLI
         run: |
