@@ -231,7 +231,7 @@ def highlight_best_score(row, best_score):
 def iter_kernels(comp_slug, max_num_kernels):
     driver = create_chrome_driver()
 
-    comp_url = f"https://www.kaggle.com/c/{comp_slug}/notebooks"
+    comp_url = f"{TOP_URL}/c/{comp_slug}/notebooks"
 
     TIMEOUT = 15  # seconds
 
