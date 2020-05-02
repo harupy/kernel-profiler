@@ -51,7 +51,7 @@ def get_action_inputs(input_types):
 
 
 def set_action_output(key, value):
-    os.system(f'echo "::set-output name={key}::{value}"')
+    print(f"::set-output name={key}::{value}")
 
 
 def set_action_outputs(outputs):
