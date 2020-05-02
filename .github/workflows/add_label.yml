@@ -27,12 +27,26 @@ jobs:
             ).data;
 
             // Get labels that are available in this repository.
+            const getName = ({ name }) => name;
             const allLabels = (
               await github.issues.listLabelsForRepo({
                 owner,
                 repo,
               })
-            ).data.map(({ name }) => name);
+            ).data.map(getName);
+
+            const isAvailable = name => allLabels.includes(name);
+
+            // Get labels attached to the pull request.
+            const currentLabels = (
+              await github.issues.listLabelsOnIssue({
+                owner,
+                repo,
+                issue_number,
+              })
+            ).data.map(getName);
+
+            const isAttached = name => currentLabels.includes(name);
 
             // Find labels in the pull request description.
             const findLabels = (regex, s, labels = []) => {
@@ -49,12 +63,12 @@ jobs:
             };
 
             const regex = /- \[([ x]*)\] (.+)/gm;
-            const labels = findLabels(regex, pr.body).filter(({ name }) => allLabels.includes(name));
+            const labels = findLabels(regex, pr.body).filter(({ name }) => isAvailable(name));
 
-            // Remove unchecked labels
+            // Remove unchecked labels.
             // NOTE: This doesn't raise an error even if the label doesn't exist.
             labels
-              .filter(({ checked }) => !checked)
+              .filter(({ name, checked }) => !checked && isAttached(name))
               .forEach(async ({ name }) => {
                 await github.issues.removeLabel({
                   owner,
@@ -69,5 +83,5 @@ jobs:
               owner,
               repo,
               issue_number,
-              labels: labels.filter(({ checked }) => checked).map(({ name }) => name),
+              labels: labels.filter(({ name, checked }) => checked && !isAttached(name)).map(getName),
             });
