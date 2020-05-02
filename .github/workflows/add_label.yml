@@ -1,45 +1,32 @@
+name: Add Label
 on:
   pull_request:
-    types: [synchronize, edited]
+    types: [opened, synchronize, edited]
 
 jobs:
-  welcome:
+  add-label:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@0.9.0
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            // https://octokit.github.io/rest.js/v16
+            // API doc: https://octokit.github.io/rest.js/v16
 
-            const owner = "harupy";
-            const repo = "kernel-profiler";
+            const { owner, repo } = context.repo;
             const issue_number = context.issue.number;
             const pull_number = context.issue.number;
 
-            // Get a pull request that trigger this action.
-            const pr = await github.pulls.get({
-              owner,
-              repo,
-              pull_number,
-            });
+            // Get a pull request that triggered this action.
+            const pr = (
+              await github.pulls.get({
+                owner,
+                repo,
+                pull_number,
+              })
+            ).data;
 
-            // Find labels from the pull request description.
-            const isChecked = x => x.trim() === "x";
-
-            const findLabels = (regex, s, labels = []) => {
-              const res = regex.exec(s);
-
-              if (res) {
-                const checked = isChecked(res[1]);
-                const name = res[2];
-
-                return findLabels(regex, s, [{ name, checked }, ...labels]);
-              }
-
-              return labels;
-            };
-
+            // Get labels that are available in this repository.
             const allLabels = (
               await github.issues.listLabelsForRepo({
                 owner,
@@ -47,14 +34,25 @@ jobs:
               })
             ).data.map(({ name }) => name);
 
-            console.log(allLabels);
+            // Find labels in the pull request description.
+            const findLabels = (regex, s, labels = []) => {
+              const res = regex.exec(s);
+
+              if (res) {
+                const checked = res[1].trim() === "x";
+                const name = res[2].trim();
+
+                return findLabels(regex, s, [{ name, checked }, ...labels]);
+              }
+
+              return labels;
+            };
 
             const regex = /- \[([ x]*)\] (.+)/gm;
-            const labels = findLabels(regex, pr.data.body).filter(({ name }) => allLabels.includes(name));
+            const labels = findLabels(regex, pr.body).filter(({ name }) => allLabels.includes(name));
 
-            console.log(labels);
-
-            // Delete unchecked labels
+            // Remove unchecked labels
+            // NOTE: This doesn't raise an error even if the label doesn't exist.
             labels
               .filter(({ checked }) => !checked)
               .forEach(async ({ name }) => {
@@ -66,7 +64,7 @@ jobs:
                 });
               });
 
-            // Add checked labels.
+            // Add checked tasks
             await github.issues.addLabels({
               owner,
               repo,
