@@ -76,7 +76,6 @@ def extract_medal_src(soup):
 
 
 def extract_kernel_metadata(soup):
-    # Replace "notebook" with "discussion" to use a bigger medal image.
     medal_src = extract_medal_src(soup)
 
     return {
@@ -96,6 +95,7 @@ def extract_kernel_metadata(soup):
         "best_score": soup.select("div.kernel-list-item__score")[0].text.strip(),
         "language": soup.select("span.tooltip-container")[2].text.strip(),
         "medal_src": (
+            # Replace "notebook" with "discussion" to use a bigger medal image.
             TOP_URL + medal_src.replace("notebooks", "discussion")
             if medal_src is not None
             else ""
