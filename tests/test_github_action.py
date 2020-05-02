@@ -47,3 +47,15 @@ def test_get_action_inputs():
         assert args.str == "x"
         assert args.int == 0
         assert args.float == 0.1
+
+
+def test_set_action_output(capsys):
+    ga.set_action_output("a", "b")
+    captured = capsys.readouterr()
+    assert captured.out == "::set-output name=a::b\n"
+
+
+def test_set_action_outputs(capsys):
+    ga.set_action_outputs({"a": "b", "c": "d"})
+    captured = capsys.readouterr()
+    assert captured.out == "::set-output name=a::b\n::set-output name=c::d\n"

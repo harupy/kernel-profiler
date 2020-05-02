@@ -50,10 +50,27 @@ def get_action_inputs(input_types):
     return Args(*[t(get_action_input(k)) for k, t in input_types.items()])
 
 
-def set_action_output(key, value):
-    os.system(f'echo "::set-output name={key}::{value}"')
+def set_action_output(name, value):
+    """
+    Examples
+    --------
+    >>> set_action_output("a", "b")
+    ::set-output name=a::b
+
+    References
+    ----------
+    https://help.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable  # NOQA
+
+    """
+    print(f"::set-output name={name}::{value}")
 
 
 def set_action_outputs(outputs):
-    for key, value in outputs.items():
-        set_action_output(key, value)
+    """
+    >>> set_action_outputs({"a": "b", "c": "d"})
+    ::set-output name=a::b
+    ::set-output name=c::d
+
+    """
+    for name, value in outputs.items():
+        set_action_output(name, value)
