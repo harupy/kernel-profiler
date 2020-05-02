@@ -29,10 +29,10 @@ def make_table(data, headers):
     --------
     >>> print(make_table([("a", "b")], ["x", "y"]))
     |x|y|
-    | :-- | :-- |
+    |:--|:--|
     |a|b|
 
     """
     return "\n".join(
-        [make_row(headers), make_row([" :-- "] * len(headers)), *map(make_row, data)]
+        [make_row(headers), make_row([":--"] * len(headers)), *map(make_row, data)]
     )

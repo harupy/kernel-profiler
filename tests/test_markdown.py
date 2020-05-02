@@ -14,5 +14,5 @@ def test_make_table():
     headers = ["a", "b"]
 
     actual = md.make_table(data, headers)
-    expected = "\n".join(["|a|b|", "| :-- | :-- |", "|1|2|", "|3|4|"])
+    expected = "\n".join(["|a|b|", "|:--|:--|", "|1|2|", "|3|4|"])
     assert actual == expected
