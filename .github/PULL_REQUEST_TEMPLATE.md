@@ -2,4 +2,4 @@
 
 - [ ] bug
 - [ ] enhancement
-- [ ] bug
+- [ ] refactor
