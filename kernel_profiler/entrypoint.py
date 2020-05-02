@@ -19,7 +19,11 @@ from kernel_profiler import markdown as md, html, github_action as ga, utils
 
 TOP_URL = "https://www.kaggle.com"
 DESCRIPTION = """
-## My GitHub repository: [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler) automatically updates this notebook by using [GitHub Actions](https://github.com/features/actions) and [Kaggle API](https://github.com/Kaggle/kaggle-api). Any feedback would be appreciated.
+## My GitHub repository: [harupy/kernel-profiler][kernel-profiler] automatically updates this notebook by using [GitHub Actions][actions] and [Kaggle API][kaggle-api]. Any feedback would be appreciated.
+
+[kernel-profiler]: https://github.com/harupy/kernel-profiler
+[actions]: https://github.com/features/actions
+[kaggle-api]: https://github.com/Kaggle/kaggle-api
 """.strip()  # NOQA
 
 
@@ -72,8 +76,7 @@ def extract_medal_src(soup):
     medal = soup.select("img.kernel-list-item__medals")
 
     if len(medal) > 0:
-        # Replace "notebook" with "discussion" to use a bigger medal image.
-        return medal[0].get("src").replace("notebooks", "discussion")
+        return medal[0].get("src")
 
 
 def extract_kernel_metadata(soup):
@@ -95,7 +98,12 @@ def extract_kernel_metadata(soup):
         ),
         "best_score": soup.select("div.kernel-list-item__score")[0].text.strip(),
         "language": soup.select("span.tooltip-container")[2].text.strip(),
-        "medal_src": (TOP_URL + medal_src) if medal_src is not None else "",
+        "medal_src": (
+            # Replace "notebook" with "discussion" to use a bigger medal image.
+            TOP_URL + medal_src.replace("notebooks", "discussion")
+            if medal_src is not None
+            else ""
+        ),
     }
 
 
@@ -199,10 +207,13 @@ def make_profile(kernel_link, thumbnail, commit_table, meta_table):
 {thumbnail}
 
 ### Kernel Information
+
 {meta_table}
 
 ### Commit History
+
 The highlighted row(s) corresponds to the best score.
+
 {commit_table}
 """.strip()
 
@@ -231,7 +242,7 @@ def highlight_best_score(row, best_score):
 def iter_kernels(comp_slug, max_num_kernels):
     driver = create_chrome_driver()
 
-    comp_url = f"https://www.kaggle.com/c/{comp_slug}/notebooks"
+    comp_url = f"{TOP_URL}/c/{comp_slug}/notebooks"
 
     TIMEOUT = 15  # seconds
 
