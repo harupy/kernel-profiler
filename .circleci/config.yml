@@ -51,6 +51,7 @@ workflows:
   ci:
     jobs:
       - build_example:
-          branches:
-            ignore:
-              - master
+          filters:
+            branches:
+              ignore:
+                - master
