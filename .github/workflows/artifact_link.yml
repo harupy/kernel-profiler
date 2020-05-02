@@ -1,8 +1,8 @@
-name: Create Example Link
+name: Add Artifact Link
 on: status
 
 jobs:
-  check:
+  add-artifact-link:
     runs-on: ubuntu-latest
     steps:
       - uses: larsoner/circleci-artifacts-redirector-action@master

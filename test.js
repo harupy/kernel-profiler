@@ -50,7 +50,9 @@ const findLabels = (regex, s, labels = []) => {
 };
 
 const regex = /- \[([ x]*)\] (.+)/gm;
-const labels = findLabels(regex, pr.body).filter(({ name }) => isAvailable(name));
+const labels = findLabels(regex, pr.body).filter(({ name }) =>
+  isAvailable(name)
+);
 
 // Remove unchecked labels.
 // NOTE: This doesn't raise an error even if the label doesn't exist.
@@ -70,5 +72,11 @@ await github.issues.addLabels({
   owner,
   repo,
   issue_number,
-  labels: labels.filter(({ name, checked }) => checked && !isAttached(name)).map(getName),
+  labels: labels
+    .filter(({ name, checked }) => checked && !isAttached(name))
+    .map(getName),
 });
+
+const labelsToAdd = labels
+  .filter(({ name, checked }) => checked && !isAttached(name))
+  .map(getName);
