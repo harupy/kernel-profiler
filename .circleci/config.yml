@@ -50,4 +50,8 @@ jobs:
 workflows:
   ci:
     jobs:
-      - build_example
+      - build_example:
+          filters:
+            branches:
+              ignore:
+                - master
