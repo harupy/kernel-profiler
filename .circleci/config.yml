@@ -17,14 +17,6 @@ commands:
     steps:
       - run: docker-compose run kernel-profiler << parameters.command >>
 
-parameters:
-  comp_slug:
-    type: string
-    default: "m5-forecasting-accuracy"
-  out_dir:
-    type: string
-    default: "output"
-
 jobs:
   build_example:
     executor: ubuntu
