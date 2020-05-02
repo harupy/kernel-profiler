@@ -19,7 +19,11 @@ from kernel_profiler import markdown as md, html, github_action as ga, utils
 
 TOP_URL = "https://www.kaggle.com"
 DESCRIPTION = """
-## My GitHub repository: [harupy/kernel-profiler](https://github.com/harupy/kernel-profiler) automatically updates this notebook by using [GitHub Actions](https://github.com/features/actions) and [Kaggle API](https://github.com/Kaggle/kaggle-api). Any feedback would be appreciated.
+## My GitHub repository: [harupy/kernel-profiler][kernel-profiler] automatically updates this notebook by using [GitHub Actions][actions] and [Kaggle API][kaggle-api]. Any feedback would be appreciated.
+
+[kernel-profiler]: https://github.com/harupy/kernel-profiler
+[actions]: https://github.com/features/actions
+[kaggle-api]: https://github.com/Kaggle/kaggle-api
 """.strip()  # NOQA
 
 
