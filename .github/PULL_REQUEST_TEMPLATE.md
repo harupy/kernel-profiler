@@ -1,5 +1,5 @@
 ### Labels to apply this PR:
 
-- bug
-- enhancement
-- bug
+- [ ] bug
+- [ ] enhancement
+- [ ] bug
