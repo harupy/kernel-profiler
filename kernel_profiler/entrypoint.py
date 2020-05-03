@@ -38,7 +38,10 @@ def parse_args():
         "--max-num-kernels",
         type=int,
         default=20,
-        help="The maximum number of kernels profile for each competition (default: 20)",
+        help=(
+            "The maximum number of kernels to profile "
+            "for each competition (default: 20)"
+        ),
     )
     parser.add_argument(
         "-o",
@@ -74,7 +77,6 @@ def make_soup(markup):
 
 def extract_medal_src(soup):
     medal = soup.select("img.kernel-list-item__medals")
-
     if len(medal) > 0:
         return medal[0].get("src")
 
@@ -157,8 +159,8 @@ def extract_commits(soup):
             continue
 
         # Ignore failed commits.
-        icon = row.select("a:nth-of-type(1) > svg")[0].get("data-icon")
-        if icon == "times-circle":
+        status_icon = row.select("a:nth-of-type(1) > svg")[0].get("data-icon")
+        if status_icon == "times-circle":
             continue
 
         # Extract the public score.
@@ -166,6 +168,7 @@ def extract_commits(soup):
         resp = requests.get(url)
         score = utils.extract_public_score(resp.text)
 
+        # Ignore commits that do not have a score.
         if score is None:
             continue
 
@@ -173,7 +176,7 @@ def extract_commits(soup):
 
         commits.append(
             (
-                ver_num if ver_num is not None else version,
+                ver_num if (ver_num is not None) else version,
                 score,
                 committed_at,
                 utils.round_run_time(run_time),
@@ -249,14 +252,14 @@ def iter_kernels(comp_slug, max_num_kernels):
     # Open the notebooks tab.
     driver.get(comp_url)
 
-    # Click 'Sort By' select box.
+    # Click `Sort By` select box.
     WebDriverWait(driver, TIMEOUT).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "div.Select-value"))
     )
     sort_by = driver.find_element_by_css_selector("div.Select-value")
     sort_by.click()
 
-    # Select "Best score".
+    # Select `Best score` option.
     WebDriverWait(driver, TIMEOUT).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "div.Select-menu-outer"))
     )
@@ -295,7 +298,6 @@ def iter_kernels(comp_slug, max_num_kernels):
             )
         )
 
-        # Get the page source containing the commit table.
         yield driver.page_source, kernel_meta
 
     driver.quit()
@@ -318,8 +320,11 @@ def main():
     for kernel_html, kernel_meta in iter_kernels(comp_slug, max_num_kernels):
         soup = make_soup(kernel_html)
 
-        # Make a commit table.
+        # Make a commit history table.
         commits, headers = extract_commits(soup)
+
+        # `premailer.transform` turns CSS blocks into style attributes.
+        # See: https://github.com/peterbe/premailer
         commit_table = transform(
             pd.DataFrame(commits, columns=headers)
             .style.apply(
@@ -339,7 +344,7 @@ def main():
 
         profiles.append(make_profile(kernel_link, thumbnail, commit_table, meta_table))
 
-    # Save the result with a timestamp.
+    # Save the output.
     os.makedirs(out_dir, exist_ok=True)
     md_path = os.path.join(out_dir, f"{comp_slug}.md")
     timestamp = "## Last Updated: {}".format(
