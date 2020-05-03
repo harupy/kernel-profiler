@@ -42,7 +42,7 @@ jobs:
 
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-onj: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
