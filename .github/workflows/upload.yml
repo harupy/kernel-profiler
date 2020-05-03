@@ -62,5 +62,5 @@ jobs:
           code_file: ./output/${{ matrix.competition.slug }}.ipynb
           language: python
           kernel_type: notebook
-          is_private: false
+          is_private: true
           competition_sources: ${{ matrix.competition.slug }}
