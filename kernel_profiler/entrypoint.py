@@ -74,7 +74,6 @@ def make_soup(markup):
 
 def extract_medal_src(soup):
     medal = soup.select("img.kernel-list-item__medals")
-
     if len(medal) > 0:
         return medal[0].get("src")
 
