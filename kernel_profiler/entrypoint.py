@@ -38,7 +38,10 @@ def parse_args():
         "--max-num-kernels",
         type=int,
         default=20,
-        help="The maximum number of kernels to profile for each competition (default: 20)",
+        help=(
+            "The maximum number of kernels to profile "
+            "for each competition (default: 20)"
+        ),
     )
     parser.add_argument(
         "-o",
