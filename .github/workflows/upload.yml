@@ -57,7 +57,7 @@ jobs:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
         with:
-          slug: top-scoring-kernels-${{ matrix.competition.id }}
+          id: ${{ secrets.KAGGLE_USERNAME }}/top-scoring-kernels-${{ matrix.competition.id }}
           title: "Top Scoring Kernels: ${{ matrix.competition.id }}"
           code_file: ./output/${{ matrix.competition.slug }}.ipynb
           language: python
