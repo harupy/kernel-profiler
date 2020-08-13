@@ -26,6 +26,6 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
-            core.setOutput('sha', resp.data.slice(-1)[0]);
+            core.setOutput('sha', resp.data.slice(-1)[0].sha);
 
       - run: echo ${{ steps.get-latest-sha.outputs.sha }}
