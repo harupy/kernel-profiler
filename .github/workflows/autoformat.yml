@@ -1,0 +1,16 @@
+name: Autoformat
+
+on:
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  autoformat:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.head_ref }}
+      - run: echo ${{ github.base_ref }}
+      - env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo $GITHUB_CONTEXT
