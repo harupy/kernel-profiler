@@ -15,3 +15,14 @@ jobs:
       - env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo $GITHUB_CONTEXT
+
+      - uses: actions/github-script@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const resp = await github.pulls.listCommits({
+              pull_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            console.log(resp.data.slice(-1)[0])
