@@ -27,6 +27,14 @@ jobs:
               repo: context.repo.repo,
             });
             core.setOutput('sha', resp.data.slice(-1)[0].sha);
+
       - uses: actions/checkout@v2
         with:
           ref: ${{ steps.get-latest-sha.outputs.sha }}
+      - run: |
+          date > test.txt
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -s -m "generated"
+          git push
