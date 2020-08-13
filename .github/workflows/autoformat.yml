@@ -32,6 +32,10 @@ jobs:
         with:
           ref: ${{ steps.get-latest-sha.outputs.sha }}
       - run: |
+          git status
+          git remote -v
+          git branch -a
+      - run: |
           date > test.txt
           git config user.name github-actions
           git config user.email github-actions@github.com
