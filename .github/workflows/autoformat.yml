@@ -27,5 +27,6 @@ jobs:
               repo: context.repo.repo,
             });
             core.setOutput('sha', resp.data.slice(-1)[0].sha);
-
-      - run: echo ${{ steps.get-latest-sha.outputs.sha }}
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.get-latest-sha.outputs.sha }}
