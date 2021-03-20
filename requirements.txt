@@ -6,7 +6,7 @@ lxml==4.5.0
 
 # Highlight the best score.
 pandas==1.0.3
-Jinja2==2.11.2
+Jinja2==2.11.3
 premailer==3.6.1
 
 # Convert markdown files to notebooks.
